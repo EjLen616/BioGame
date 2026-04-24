@@ -1035,22 +1035,22 @@ MonoBehaviour:
   - 1
   - 2
   unhealthyStages:
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 1, g: 0.68490565, b: 0.68490565, a: 1}
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 1, g: 0.42075467, b: 0.42075467, a: 1}
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 1, g: 0, b: 0, a: 1}
+  - sprite: {fileID: -9080459899094382964, guid: 5f2cfee56b7b7dc48b60ce56abad6d47, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - sprite: {fileID: -3151503489893355058, guid: 3befc719c82a81f4f93b2f1585f3f621, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - sprite: {fileID: 7708326725734927496, guid: 1a05a9afdadb76649934bc2bc64bc092, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
   neutralStage:
     sprite: {fileID: -172307431166173272, guid: 485befc0ec08a8d4cbabce2a193f94d9, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   healthyStages:
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 0.65471697, g: 1, b: 0.6704146, a: 1}
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 0.33773577, g: 1, b: 0.36783865, a: 1}
-  - sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-    color: {r: 0, g: 1, b: 0.047337294, a: 1}
+  - sprite: {fileID: -7427634156536945224, guid: 11b37b705e6c9644792e86fb3a18e9b5, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - sprite: {fileID: -3443147423918103597, guid: 9ad718086d68bee489724b6cb40c78f1, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - sprite: {fileID: -8082650579942943322, guid: 78935296bcb9cdb42933943553ba01d8, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
   maxHealthStages: 3
   pointsForCorrect: 20
   pointsForWrong: -10
