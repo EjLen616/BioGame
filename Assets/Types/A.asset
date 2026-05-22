@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: A
   m_EditorClassIdentifier: 
   typeName: A
-  sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  color: {r: 1, g: 0, b: 0, a: 1}
+  sprite: {fileID: -8680797543115379092, guid: 4e1229cecba6f7d43a3589a72f8fe3c2, type: 3}
+  color: {r: 1, g: 1, b: 1, a: 1}
   pointValue: 10
   acceptedBaskets:
-  - Right
+  - Bone
