@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: E
   m_EditorClassIdentifier: 
   typeName: E
-  sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
+  sprite: {fileID: -6365667155851698992, guid: a696d7fa8f70b4f4389ee099a7258b8b, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
   pointValue: 10
   acceptedBaskets:

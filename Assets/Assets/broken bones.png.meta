@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 45ae687d932313f45b14f30c8a9b5a80
+guid: e61948ba6b00cdf408d9a83c6b445d7b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7425438597007568885
-    second: B_0
+      213: 2217521879264586750
+    second: broken bones_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: B_0
+      name: broken bones_0
       rect:
         serializedVersion: 2
-        x: 431
-        y: 2
-        width: 1082
-        height: 1078
+        x: 110
+        y: 88
+        width: 275
+        height: 303
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ff6c14ff057c0760800000000000000
-      internalID: 7425438597007568885
+      spriteID: efbe837766836ce10800000000000000
+      internalID: 2217521879264586750
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      B_0: 7425438597007568885
+      broken bones_0: 2217521879264586750
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
