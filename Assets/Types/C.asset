@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeName: C
   sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  color: {r: 0, g: 0.1552577, b: 1, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
   pointValue: 10
   acceptedBaskets:
-  - Left
+  - Skin
+  - Teeth

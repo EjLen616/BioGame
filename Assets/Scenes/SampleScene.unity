@@ -948,7 +948,7 @@ GameObject:
   - component: {fileID: 751548607}
   - component: {fileID: 751548606}
   m_Layer: 0
-  m_Name: BR
+  m_Name: Muscle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -966,7 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54e3caaf41a38b8409a2c825d1cf30b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basketName: Right
+  basketName: Muscle
   acceptedObjectTypes:
   - 3
   unhealthyStages:
@@ -1567,8 +1567,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -202, y: -214}
-  m_SizeDelta: {x: 204.74, y: 85.049}
+  m_AnchoredPosition: {x: -167.104, y: -197.769}
+  m_SizeDelta: {x: 274.532, y: 117.511}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1211562310
 MonoBehaviour:
@@ -2144,7 +2144,7 @@ GameObject:
   - component: {fileID: 1746500700}
   - component: {fileID: 1746500699}
   m_Layer: 0
-  m_Name: BL
+  m_Name: Bone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2391,7 +2391,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1980, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2478,8 +2478,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 208, y: -204}
-  m_SizeDelta: {x: 218.271, y: 73.979}
+  m_AnchoredPosition: {x: 170.67, y: -195.885}
+  m_SizeDelta: {x: 292.933, y: 90.21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1991358947
 MonoBehaviour:

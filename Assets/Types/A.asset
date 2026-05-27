@@ -18,3 +18,4 @@ MonoBehaviour:
   pointValue: 10
   acceptedBaskets:
   - Bone
+  - Skin
