@@ -150,6 +150,9 @@ public class FallingObject : MonoBehaviour
 
     void OnDestroy()
     {
+        // If object was caught correctly, play sound
+        // You can add a flag to check if it was caught correctly
+
         // Notify ObjectSpawner if needed
         ObjectSpawner spawner = FindFirstObjectByType<ObjectSpawner>();
         if (spawner != null)
@@ -157,4 +160,5 @@ public class FallingObject : MonoBehaviour
             spawner.ObjectDestroyed();
         }
     }
+    
 }

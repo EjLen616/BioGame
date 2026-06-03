@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     // Cache baskets for performance
     private Basket[] baskets;
 
+    private LevelController levelController;
+
     void Awake()
     {
         if (Instance == null)
@@ -38,6 +40,12 @@ public class GameManager : MonoBehaviour
         CurrentState = GameState.Playing;
         FindAllBaskets();
         UpdateUI();
+
+        InitializeLevelController();
+    }
+    void InitializeLevelController()
+    {
+        levelController = FindFirstObjectByType<LevelController>();
     }
 
     void FindAllBaskets()
@@ -101,9 +109,33 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameState.Playing) return;
 
         CurrentState = GameState.Win;
-        if (winPanel != null) winPanel.SetActive(true);
-        Time.timeScale = 0f;
-        Debug.Log("You Win!");
+
+        // Play win sound
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayWinSound();
+
+        if (CurrentState != GameState.Playing) return;
+
+        CurrentState = GameState.Win;
+
+        // If LevelController exists, let it handle completion
+        if (levelController == null)
+        {
+            levelController = FindFirstObjectByType<LevelController>();
+        }
+
+        if (levelController != null)
+        {
+            // LevelController will handle UI and saving
+            Debug.Log("Level completed!");
+        }
+        else
+        {
+            // Fallback UI
+            if (winPanel != null) winPanel.SetActive(true);
+            Time.timeScale = 0f;
+        }
+
     }
 
     void LoseGame()
