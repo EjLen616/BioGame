@@ -624,7 +624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &481718592
 RectTransform:
   m_ObjectHideFlags: 0
@@ -642,8 +642,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -244, y: -198}
-  m_SizeDelta: {x: 218.271, y: 73.979}
+  m_AnchoredPosition: {x: 0.000030518, y: -233}
+  m_SizeDelta: {x: 388.058, y: 117.258}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &481718593
 MonoBehaviour:
@@ -1491,8 +1491,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -1172.501, y: -385.298}
+  m_AnchoredPosition: {x: 0.00024414062, y: 0}
+  m_SizeDelta: {x: -537.904, y: -192.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &981961522
 MonoBehaviour:
@@ -1534,7 +1534,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3749833153913143287, guid: 895d04537be06204180789a025d8b6c9, type: 3}
+  m_Sprite: {fileID: -8686948769946121102, guid: 89151bf8e12a8f44d982338fe4a641d6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3649,10 +3649,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1564543356}
   - {fileID: 1472729960}
   - {fileID: 839749638}
   - {fileID: 981961521}
-  - {fileID: 1564543356}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3672,7 +3672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd3c68b7f8e7d2341a51b0992d1b9ce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pausePanel: {fileID: 0}
+  pausePanel: {fileID: 981961520}
   settingsMenu: {fileID: 0}
   resumeButton: {fileID: 0}
   settingsButton: {fileID: 0}
@@ -3886,6 +3886,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: winSound
+      value: 
+      objectReference: {fileID: 8300000, guid: e2e613bd9808d3d46ad6b4a356fa1bee, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: loseSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 1159a904b903c204caa9e854e82e92b4, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: buttonClickSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 027c71f2d0923da43a01fbd3b9a5fa92, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: correctCatchSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 027c71f2d0923da43a01fbd3b9a5fa92, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: gameMusicTracks.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: menuMusicTracks.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: 'gameMusicTracks.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 8bf85a68a97d2df42b1367865ff5367c, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: 'gameMusicTracks.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 6817d7ed159a41146a7dea7437e55a01, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: 'gameMusicTracks.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 476dc96e90ca8864c9e5a4ea7ddd99fc, type: 3}
+    - target: {fileID: 531301584704004658, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
+      propertyPath: 'menuMusicTracks.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 96f2ab253e9955d42aa5b2ebaeaf1603, type: 3}
     - target: {fileID: 1544833116489754032, guid: 34c4c93ee941c654a95f71568c32d7a3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 124.09615

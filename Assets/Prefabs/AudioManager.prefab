@@ -44,13 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c98fb0c1614e9141a1dee8ec320810c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuMusicTracks: []
-  gameMusicTracks: []
+  menuMusicTracks:
+  - {fileID: 8300000, guid: 96f2ab253e9955d42aa5b2ebaeaf1603, type: 3}
+  gameMusicTracks:
+  - {fileID: 8300000, guid: 8bf85a68a97d2df42b1367865ff5367c, type: 3}
+  - {fileID: 8300000, guid: 6817d7ed159a41146a7dea7437e55a01, type: 3}
+  - {fileID: 8300000, guid: 476dc96e90ca8864c9e5a4ea7ddd99fc, type: 3}
   shuffleMusic: 1
-  buttonClickSound: {fileID: 0}
-  winSound: {fileID: 0}
-  loseSound: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: 027c71f2d0923da43a01fbd3b9a5fa92, type: 3}
+  winSound: {fileID: 8300000, guid: e2e613bd9808d3d46ad6b4a356fa1bee, type: 3}
+  loseSound: {fileID: 8300000, guid: 1159a904b903c204caa9e854e82e92b4, type: 3}
   pointGainSound: {fileID: 0}
   pointLoseSound: {fileID: 0}
-  correctCatchSound: {fileID: 0}
+  correctCatchSound: {fileID: 8300000, guid: 027c71f2d0923da43a01fbd3b9a5fa92, type: 3}
   wrongCatchSound: {fileID: 0}

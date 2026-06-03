@@ -139,6 +139,13 @@ public class LevelManager : MonoBehaviour
         if (!string.IsNullOrEmpty(level.sceneName))
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(level.sceneName);
+
+            // Notify AudioManager about level load - using public method
+            if (AudioManager.Instance != null)
+            {
+                // Use invoke to let scene load first
+                AudioManager.Instance.Invoke(nameof(AudioManager.DetectSceneTypeAndPlayMusic), 0.2f);
+            }
         }
         else
         {
