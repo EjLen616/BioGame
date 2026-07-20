@@ -8,6 +8,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         public ObjectType objectType;
         public float spawnWeight = 1f;
+        public bool isActive = true; // NEW: Toggle to enable/disable spawning
     }
 
     [Header("Spawn Settings")]
@@ -23,6 +24,10 @@ public class ObjectSpawner : MonoBehaviour
     [Header("Spawn Area")]
     public float spawnWidth = 8f;
     public float spawnHeight = 2f;
+
+    [Header("Difficulty Settings")]
+    public bool enableDifficultyScaling = true; // NEW: Toggle difficulty scaling
+    public float baseFallSpeed = 3f; // NEW: Base fall speed for all objects
 
     private float currentSpawnRate;
     private float nextSpawnTime = 0f;
@@ -48,7 +53,10 @@ public class ObjectSpawner : MonoBehaviour
             nextSpawnTime = Time.time + currentSpawnRate;
 
             // Gradually increase spawn rate (make game harder)
-            currentSpawnRate = Mathf.Max(minSpawnRate, currentSpawnRate - spawnRateIncrease);
+            if (enableDifficultyScaling)
+            {
+                currentSpawnRate = Mathf.Max(minSpawnRate, currentSpawnRate - spawnRateIncrease);
+            }
         }
     }
 
@@ -60,9 +68,18 @@ public class ObjectSpawner : MonoBehaviour
             return;
         }
 
+        // Get only active objects
+        List<SpawnSettings> activeObjects = spawnableObjects.FindAll(s => s.isActive);
+
+        if (activeObjects.Count == 0)
+        {
+            Debug.LogWarning("No active object types to spawn!");
+            return;
+        }
+
         // Calculate total weight for random selection
         float totalWeight = 0f;
-        foreach (SpawnSettings settings in spawnableObjects)
+        foreach (SpawnSettings settings in activeObjects)
         {
             totalWeight += settings.spawnWeight;
         }
@@ -70,9 +87,9 @@ public class ObjectSpawner : MonoBehaviour
         // Randomly select object type based on weight
         float randomValue = Random.Range(0f, totalWeight);
         float cumulativeWeight = 0f;
-        ObjectType selectedType = spawnableObjects[0].objectType;
+        ObjectType selectedType = activeObjects[0].objectType;
 
-        foreach (SpawnSettings settings in spawnableObjects)
+        foreach (SpawnSettings settings in activeObjects)
         {
             cumulativeWeight += settings.spawnWeight;
             if (randomValue <= cumulativeWeight)
@@ -94,6 +111,9 @@ public class ObjectSpawner : MonoBehaviour
         if (fallingObject != null)
         {
             fallingObject.SetObjectType(selectedType);
+
+            // Set fall speed from spawner
+            fallingObject.fallSpeed = baseFallSpeed;
         }
 
         currentObjectsCount++;
@@ -113,14 +133,45 @@ public class ObjectSpawner : MonoBehaviour
     }
 
     // Public method to add new object types at runtime
-    public void AddObjectType(ObjectType newType, float weight = 1f)
+    public void AddObjectType(ObjectType newType, float weight = 1f, bool active = true)
     {
         SpawnSettings newSettings = new SpawnSettings
         {
             objectType = newType,
-            spawnWeight = weight
+            spawnWeight = weight,
+            isActive = active
         };
 
         spawnableObjects.Add(newSettings);
+    }
+
+    // NEW: Method to toggle object types
+    public void SetObjectActive(string typeName, bool active)
+    {
+        foreach (var settings in spawnableObjects)
+        {
+            if (settings.objectType.typeName == typeName)
+            {
+                settings.isActive = active;
+                Debug.Log($"Object type '{typeName}' is now {(active ? "active" : "inactive")}");
+                return;
+            }
+        }
+        Debug.LogWarning($"Object type '{typeName}' not found!");
+    }
+
+    // NEW: Method to set fall speed for all objects
+    public void SetFallSpeed(float speed)
+    {
+        baseFallSpeed = Mathf.Max(0.5f, speed);
+
+        // Update all existing objects
+        FallingObject[] objects = FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        foreach (var obj in objects)
+        {
+            obj.fallSpeed = baseFallSpeed;
+        }
+
+        Debug.Log($"Fall speed set to: {baseFallSpeed}");
     }
 }

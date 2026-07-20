@@ -51,25 +51,6 @@ public class Basket : MonoBehaviour
             }
         }
 
-        // Add this to the HandleObjectCaught method, after checking if correct:
-
-        if (isCorrectObject)
-        {
-            // Play correct catch sound
-            if (AudioManager.Instance != null)
-                AudioManager.Instance.PlayCorrectCatchSound();
-
-            // Rest of your existing code...
-        }
-        else
-        {
-            // Play wrong catch sound
-            if (AudioManager.Instance != null)
-                AudioManager.Instance.PlayWrongCatchSound();
-
-            // Rest of your existing code...
-        }
-
         if (isCorrectObject)
         {
             // Move towards healthier stage
@@ -83,6 +64,10 @@ public class Basket : MonoBehaviour
             {
                 GameManager.Instance.AddScore(pointsForCorrect + fallingObject.objectType.pointValue);
             }
+
+            // Play correct catch sound
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayCorrectCatchSound();
 
             Debug.Log("Correct object caught by " + basketName + "!");
         }
@@ -99,6 +84,10 @@ public class Basket : MonoBehaviour
             {
                 GameManager.Instance.AddScore(pointsForWrong);
             }
+
+            // Play wrong catch sound
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayWrongCatchSound();
 
             Debug.Log("Wrong object caught by " + basketName + "!");
         }

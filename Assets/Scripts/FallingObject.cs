@@ -20,6 +20,10 @@ public class FallingObject : MonoBehaviour
     public float wiggleAmount = 0.5f;
     public float wiggleSpeed = 2f;
 
+    [Header("Penalty Settings")]
+    public int missedPenalty = -50; // NEW: Points lost when object falls off screen
+    public bool enablePenalty = true; // NEW: Toggle penalty
+
     [Header("References")]
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
@@ -28,6 +32,7 @@ public class FallingObject : MonoBehaviour
     private bool isBeingDragged = false;
     private Vector3 startPosition;
     private float initialY;
+    private bool hasBeenPenalized = false; // NEW: Prevent multiple penalties
 
     void Awake()
     {
@@ -40,6 +45,7 @@ public class FallingObject : MonoBehaviour
     {
         InitializeObject();
         initialY = transform.position.y;
+        hasBeenPenalized = false;
     }
 
     void InitializeObject()
@@ -74,11 +80,36 @@ public class FallingObject : MonoBehaviour
             float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
             transform.position += new Vector3(wiggle, 0, 0);
 
-            // Destroy if below screen
-            if (transform.position.y < -10f)
+            // Check if object fell below screen
+            if (transform.position.y < -10f && !hasBeenPenalized)
             {
+                ApplyMissPenalty();
                 Destroy(gameObject);
             }
+        }
+    }
+
+    void ApplyMissPenalty() // NEW: Apply penalty when object is missed
+    {
+        if (!enablePenalty) return;
+
+        hasBeenPenalized = true;
+
+        // Apply penalty to game manager
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AddScore(missedPenalty);
+            Debug.Log($"Missed {objectType.typeName}! Penalty: {missedPenalty} points");
+
+            // Play penalty sound if available
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayPointLoseSound();
+            }
+        }
+        else
+        {
+            Debug.LogWarning("GameManager.Instance is null, cannot apply penalty!");
         }
     }
 
@@ -94,7 +125,8 @@ public class FallingObject : MonoBehaviour
         }
 
         // Bring to front while dragging
-        spriteRenderer.sortingOrder = 10;
+        if (spriteRenderer != null)
+            spriteRenderer.sortingOrder = 10;
     }
 
     void OnMouseDrag()
@@ -114,7 +146,8 @@ public class FallingObject : MonoBehaviour
             isBeingDragged = false;
 
             // Reset sorting order
-            spriteRenderer.sortingOrder = 0;
+            if (spriteRenderer != null)
+                spriteRenderer.sortingOrder = 0;
 
             // Check if over a basket
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
@@ -150,9 +183,6 @@ public class FallingObject : MonoBehaviour
 
     void OnDestroy()
     {
-        // If object was caught correctly, play sound
-        // You can add a flag to check if it was caught correctly
-
         // Notify ObjectSpawner if needed
         ObjectSpawner spawner = FindFirstObjectByType<ObjectSpawner>();
         if (spawner != null)
@@ -160,5 +190,4 @@ public class FallingObject : MonoBehaviour
             spawner.ObjectDestroyed();
         }
     }
-    
 }
