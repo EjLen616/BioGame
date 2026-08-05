@@ -759,12 +759,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnableObjects: []
   fallingObjectPrefab: {fileID: 3855544694363145059, guid: 50f011fc1d8cda74ba0827ef0a4968a3, type: 3}
-  initialSpawnRate: 1
+  initialSpawnRate: 3
   spawnRateIncrease: 0.01
-  minSpawnRate: 0.3
-  maxObjectsOnScreen: 15
+  minSpawnRate: 0.1
+  maxObjectsOnScreen: 4
   spawnWidth: 17.56
   spawnHeight: 2.54
+  enableDifficultyScaling: 1
+  baseFallSpeed: 2
 --- !u!212 &491409769
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1849,7 +1851,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1118065819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2208,7 +2210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1232383731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2462,6 +2464,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ecf464fa5fa1bb84e8939b45643bdbb2, type: 2}
   - {fileID: 11400000, guid: 288eecbc01656f641886abad075c6a11, type: 2}
   - {fileID: 11400000, guid: bfbc9dc0c9e1f054fbd39243bccc4e21, type: 2}
+  - {fileID: 11400000, guid: 377d749db33559d49a4b883d679d1e3b, type: 2}
+  - {fileID: 11400000, guid: cb9f07e266523fc43b5474975999f17b, type: 2}
+  - {fileID: 11400000, guid: 7f9f9530a6191834caf3b0f6dae80a32, type: 2}
   objectSpawner: {fileID: 491409768}
   baskets:
   - {fileID: 751548606}
@@ -2689,7 +2694,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1542629763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3201,7 +3206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1777501459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3363,7 +3368,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1896158269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3539,6 +3544,8 @@ MonoBehaviour:
   winPanel: {fileID: 1472729959}
   losePanel: {fileID: 839749637}
   scoreText: {fileID: 1564543357}
+  loseThreshold: -100
+  enableScoreBasedLose: 1
 --- !u!4 &1912491841
 Transform:
   m_ObjectHideFlags: 0

@@ -7,7 +7,7 @@ public class ObjectType
     public Sprite sprite;
     public Color color = Color.white;
     public int pointValue = 10;
-    public string[] acceptedBaskets; // Which baskets accept this object
+    public string[] acceptedBaskets;
 }
 
 public class FallingObject : MonoBehaviour
@@ -20,11 +20,9 @@ public class FallingObject : MonoBehaviour
     public float wiggleAmount = 0.5f;
     public float wiggleSpeed = 2f;
 
-    [Header("Penalty Settings")]
-    public int missedPenalty = -50; // NEW: Points lost when object falls off screen
-    public bool enablePenalty = true; // NEW: Toggle penalty
+    [Header("Touch Feedback")]
+    public float scaleOnDrag = 1.2f;
 
-    [Header("References")]
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Collider2D col;
@@ -32,20 +30,21 @@ public class FallingObject : MonoBehaviour
     private bool isBeingDragged = false;
     private Vector3 startPosition;
     private float initialY;
-    private bool hasBeenPenalized = false; // NEW: Prevent multiple penalties
+    private Vector3 originalScale;
+    private bool isReleased = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+        originalScale = transform.localScale;
     }
 
     void Start()
     {
         InitializeObject();
         initialY = transform.position.y;
-        hasBeenPenalized = false;
     }
 
     void InitializeObject()
@@ -59,7 +58,6 @@ public class FallingObject : MonoBehaviour
             }
         }
 
-        // Set gravity scale to 0 since we'll control falling manually
         if (rb != null)
         {
             rb.gravityScale = 0f;
@@ -68,7 +66,7 @@ public class FallingObject : MonoBehaviour
 
     void Update()
     {
-        if (!isBeingDragged)
+        if (!isBeingDragged && !isReleased)
         {
             // Fall downwards
             transform.position += Vector3.down * fallSpeed * Time.deltaTime;
@@ -80,98 +78,59 @@ public class FallingObject : MonoBehaviour
             float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
             transform.position += new Vector3(wiggle, 0, 0);
 
-            // Check if object fell below screen
-            if (transform.position.y < -10f && !hasBeenPenalized)
+            // Destroy if below screen
+            if (transform.position.y < -10f)
             {
-                ApplyMissPenalty();
                 Destroy(gameObject);
             }
         }
     }
 
-    void ApplyMissPenalty() // NEW: Apply penalty when object is missed
-    {
-        if (!enablePenalty) return;
-
-        hasBeenPenalized = true;
-
-        // Apply penalty to game manager
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.AddScore(missedPenalty);
-            Debug.Log($"Missed {objectType.typeName}! Penalty: {missedPenalty} points");
-
-            // Play penalty sound if available
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlayPointLoseSound();
-            }
-        }
-        else
-        {
-            Debug.LogWarning("GameManager.Instance is null, cannot apply penalty!");
-        }
-    }
-
-    void OnMouseDown()
+    // Touch/Mouse methods
+    public void OnTouchStart()
     {
         isBeingDragged = true;
         startPosition = transform.position;
+
+        // Scale up slightly for visual feedback
+        transform.localScale = originalScale * scaleOnDrag;
+        spriteRenderer.sortingOrder = 10;
 
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
         }
-
-        // Bring to front while dragging
-        if (spriteRenderer != null)
-            spriteRenderer.sortingOrder = 10;
     }
 
-    void OnMouseDrag()
+    public void OnTouchDrag(Vector3 touchPosition)
     {
         if (isBeingDragged)
         {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0;
-            transform.position = mousePos;
+            // Optional: Add smooth follow or constraints
         }
     }
 
-    void OnMouseUp()
+    public void OnTouchEnd()
     {
-        if (isBeingDragged)
+        isBeingDragged = false;
+        isReleased = true;
+
+        // Reset scale
+        transform.localScale = originalScale;
+        spriteRenderer.sortingOrder = 0;
+    }
+
+    public void ReleaseFromDrag()
+    {
+        isBeingDragged = false;
+        isReleased = false;
+        transform.localScale = originalScale;
+        spriteRenderer.sortingOrder = 0;
+
+        if (rb != null)
         {
-            isBeingDragged = false;
-
-            // Reset sorting order
-            if (spriteRenderer != null)
-                spriteRenderer.sortingOrder = 0;
-
-            // Check if over a basket
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
-
-            bool caughtByBasket = false;
-            foreach (Collider2D collider in colliders)
-            {
-                Basket basket = collider.GetComponent<Basket>();
-                if (basket != null)
-                {
-                    basket.HandleObjectCaught(this);
-                    caughtByBasket = true;
-                    break;
-                }
-            }
-
-            // If not caught by basket, resume falling
-            if (!caughtByBasket)
-            {
-                if (rb != null)
-                {
-                    rb.gravityScale = 0f;
-                }
-            }
+            rb.gravityScale = 0f;
         }
     }
 
@@ -183,7 +142,6 @@ public class FallingObject : MonoBehaviour
 
     void OnDestroy()
     {
-        // Notify ObjectSpawner if needed
         ObjectSpawner spawner = FindFirstObjectByType<ObjectSpawner>();
         if (spawner != null)
         {

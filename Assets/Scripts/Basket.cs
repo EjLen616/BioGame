@@ -10,16 +10,16 @@ public class HealthStage
 public class Basket : MonoBehaviour
 {
     public string basketName;
-    public string[] acceptedObjectTypes; // Which object types this basket accepts
+    public string[] acceptedObjectTypes;
 
     [Header("Health Stages")]
-    public HealthStage[] unhealthyStages = new HealthStage[3]; // Index 0 = worst, 2 = least bad
+    public HealthStage[] unhealthyStages = new HealthStage[3];
     public HealthStage neutralStage;
-    public HealthStage[] healthyStages = new HealthStage[3]; // Index 0 = least healthy, 2 = healthiest
+    public HealthStage[] healthyStages = new HealthStage[3];
 
     [Header("References")]
     private SpriteRenderer spriteRenderer;
-    private int currentHealthStage = 0; // 0 = neutral, negative = unhealthy, positive = healthy
+    private int currentHealthStage = 0;
     public int CurrentHealthStage => currentHealthStage;
 
     [Header("Settings")]
@@ -41,7 +41,6 @@ public class Basket : MonoBehaviour
     {
         bool isCorrectObject = false;
 
-        // Check if object type is accepted
         foreach (string acceptedType in acceptedObjectTypes)
         {
             if (fallingObject.objectType.typeName == acceptedType)
@@ -53,55 +52,53 @@ public class Basket : MonoBehaviour
 
         if (isCorrectObject)
         {
-            // Move towards healthier stage
             if (currentHealthStage < maxHealthStages)
             {
                 currentHealthStage++;
             }
 
-            // Add points
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.AddScore(pointsForCorrect + fallingObject.objectType.pointValue);
             }
 
-            // Play correct catch sound
+            // Play correct sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayCorrectCatchSound();
+
+            // Haptic feedback for correct catch
+#if UNITY_IOS
+            iOSSettings.TriggerHapticFeedback();
+#endif
 
             Debug.Log("Correct object caught by " + basketName + "!");
         }
         else
         {
-            // Move towards unhealthier stage
             if (currentHealthStage > -maxHealthStages)
             {
                 currentHealthStage--;
             }
 
-            // Deduct points
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.AddScore(pointsForWrong);
             }
 
-            // Play wrong catch sound
+            // Play wrong sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayWrongCatchSound();
 
             Debug.Log("Wrong object caught by " + basketName + "!");
         }
 
-        // Update basket appearance
         UpdateAppearance();
 
-        // Notify GameManager
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateBasketHealth(GetInstanceID(), currentHealthStage);
         }
 
-        // Destroy the object
         Destroy(fallingObject.gameObject);
     }
 
@@ -124,13 +121,13 @@ public class Basket : MonoBehaviour
         {
             return neutralStage;
         }
-        else if (currentHealthStage > 0) // Healthy stages
+        else if (currentHealthStage > 0)
         {
             int index = Mathf.Min(currentHealthStage - 1, healthyStages.Length - 1);
             if (index >= 0 && index < healthyStages.Length)
                 return healthyStages[index];
         }
-        else // Unhealthy stages
+        else
         {
             int index = Mathf.Min(Mathf.Abs(currentHealthStage) - 1, unhealthyStages.Length - 1);
             if (index >= 0 && index < unhealthyStages.Length)
@@ -138,12 +135,5 @@ public class Basket : MonoBehaviour
         }
 
         return neutralStage;
-    }
-
-    void OnDrawGizmos()
-    {
-        // Visualize basket area
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, 1f);
     }
 }
