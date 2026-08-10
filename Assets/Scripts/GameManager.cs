@@ -18,12 +18,13 @@ public class GameManager : MonoBehaviour
     // Score tracking
     private int score = 0;
 
-    // NEW: Lose condition settings
-    public int loseThreshold = -100; // NEW: Score threshold for losing
-    public bool enableScoreBasedLose = true; // NEW: Toggle lose condition
-
     // Cache baskets for performance
     private Basket[] baskets;
+
+    [Header("Score Settings")]
+    public int pointsForCorrectCatch = 20;
+    public int pointsForWrongCatch = -10;
+    public int pointsForMissedObject = -5; // Points lost when object falls off screen
 
     void Awake()
     {
@@ -42,6 +43,12 @@ public class GameManager : MonoBehaviour
         CurrentState = GameState.Playing;
         FindAllBaskets();
         UpdateUI();
+
+        // Force game music to play
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameMusic();
+        }
     }
 
     void FindAllBaskets()
@@ -92,13 +99,18 @@ public class GameManager : MonoBehaviour
     {
         score += points;
         UpdateUI();
+    }
 
-        // NEW: Check if score has dropped below lose threshold
-        if (enableScoreBasedLose && score <= loseThreshold && CurrentState == GameState.Playing)
-        {
-            Debug.Log($"Score dropped to {score}, below threshold {loseThreshold}!");
-            LoseGame();
-        }
+    public void ObjectMissed()
+    {
+        // Apply penalty for missed object
+        AddScore(pointsForMissedObject);
+
+        // Play point lose sound
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayPointLoseSound();
+
+        Debug.Log($"Object missed! Score: {pointsForMissedObject} points");
     }
 
     void UpdateUI()
@@ -112,13 +124,18 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameState.Playing) return;
 
         CurrentState = GameState.Win;
-        if (winPanel != null) winPanel.SetActive(true);
-        Time.timeScale = 0f;
-        Debug.Log("You Win!");
 
         // Play win sound
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayWinSound();
+
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+            Time.timeScale = 0f;
+        }
+
+        Debug.Log("You Win!");
     }
 
     void LoseGame()
@@ -126,13 +143,18 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameState.Playing) return;
 
         CurrentState = GameState.Lose;
-        if (losePanel != null) losePanel.SetActive(true);
-        Time.timeScale = 0f;
-        Debug.Log("Game Over!");
 
         // Play lose sound
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayLoseSound();
+
+        if (losePanel != null)
+        {
+            losePanel.SetActive(true);
+            Time.timeScale = 0f;
+        }
+
+        Debug.Log("Game Over!");
     }
 
     public void RestartGame()
@@ -148,11 +170,5 @@ public class GameManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
-    }
-
-    // NEW: Get current score (for debugging)
-    public int GetCurrentScore()
-    {
-        return score;
     }
 }

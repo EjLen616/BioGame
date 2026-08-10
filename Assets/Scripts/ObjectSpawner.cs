@@ -8,7 +8,6 @@ public class ObjectSpawner : MonoBehaviour
     {
         public ObjectType objectType;
         public float spawnWeight = 1f;
-        public bool isActive = true; // NEW: Toggle to enable/disable spawning
     }
 
     [Header("Spawn Settings")]
@@ -23,11 +22,13 @@ public class ObjectSpawner : MonoBehaviour
 
     [Header("Spawn Area")]
     public float spawnWidth = 8f;
-    public float spawnHeight = 2f;
+    public float spawnYPosition = 6f; // Y position at top of screen
 
-    [Header("Difficulty Settings")]
-    public bool enableDifficultyScaling = true; // NEW: Toggle difficulty scaling
-    public float baseFallSpeed = 3f; // NEW: Base fall speed for all objects
+    [Header("Global Speed Settings")]
+    public float baseFallSpeed = 3f;
+    public float speedIncreaseInterval = 3f;
+    public float speedIncreaseAmount = 0.5f;
+    public float maxFallSpeed = 10f;
 
     private float currentSpawnRate;
     private float nextSpawnTime = 0f;
@@ -53,10 +54,7 @@ public class ObjectSpawner : MonoBehaviour
             nextSpawnTime = Time.time + currentSpawnRate;
 
             // Gradually increase spawn rate (make game harder)
-            if (enableDifficultyScaling)
-            {
-                currentSpawnRate = Mathf.Max(minSpawnRate, currentSpawnRate - spawnRateIncrease);
-            }
+            currentSpawnRate = Mathf.Max(minSpawnRate, currentSpawnRate - spawnRateIncrease);
         }
     }
 
@@ -68,18 +66,9 @@ public class ObjectSpawner : MonoBehaviour
             return;
         }
 
-        // Get only active objects
-        List<SpawnSettings> activeObjects = spawnableObjects.FindAll(s => s.isActive);
-
-        if (activeObjects.Count == 0)
-        {
-            Debug.LogWarning("No active object types to spawn!");
-            return;
-        }
-
         // Calculate total weight for random selection
         float totalWeight = 0f;
-        foreach (SpawnSettings settings in activeObjects)
+        foreach (SpawnSettings settings in spawnableObjects)
         {
             totalWeight += settings.spawnWeight;
         }
@@ -87,9 +76,9 @@ public class ObjectSpawner : MonoBehaviour
         // Randomly select object type based on weight
         float randomValue = Random.Range(0f, totalWeight);
         float cumulativeWeight = 0f;
-        ObjectType selectedType = activeObjects[0].objectType;
+        ObjectType selectedType = spawnableObjects[0].objectType;
 
-        foreach (SpawnSettings settings in activeObjects)
+        foreach (SpawnSettings settings in spawnableObjects)
         {
             cumulativeWeight += settings.spawnWeight;
             if (randomValue <= cumulativeWeight)
@@ -99,21 +88,25 @@ public class ObjectSpawner : MonoBehaviour
             }
         }
 
-        // Calculate spawn position
+        // Calculate spawn position - ONLY X is random, Y is always at top
         float spawnX = Random.Range(-spawnWidth / 2f, spawnWidth / 2f);
-        Vector3 spawnPosition = transform.position + new Vector3(spawnX, Random.Range(0, spawnHeight), 0);
+        Vector3 spawnPosition = new Vector3(spawnX, spawnYPosition, 0);
 
         // Instantiate object
         GameObject newObject = Instantiate(fallingObjectPrefab, spawnPosition, Quaternion.identity);
 
-        // Set object type
+        // Set object type and speed settings
         FallingObject fallingObject = newObject.GetComponent<FallingObject>();
         if (fallingObject != null)
         {
             fallingObject.SetObjectType(selectedType);
 
-            // Set fall speed from spawner
-            fallingObject.fallSpeed = baseFallSpeed;
+            // Apply global speed settings to this object
+            fallingObject.baseFallSpeed = baseFallSpeed;
+            fallingObject.speedIncreaseInterval = speedIncreaseInterval;
+            fallingObject.speedIncreaseAmount = speedIncreaseAmount;
+            fallingObject.maxFallSpeed = maxFallSpeed;
+            fallingObject.ResetFallSpeed();
         }
 
         currentObjectsCount++;
@@ -124,54 +117,83 @@ public class ObjectSpawner : MonoBehaviour
         currentObjectsCount = Mathf.Max(0, currentObjectsCount - 1);
     }
 
-    void OnDrawGizmos()
+    // Public method to update global speed settings at runtime
+    public void UpdateGlobalSpeedSettings(float newBaseSpeed, float newInterval, float newIncrease, float newMax)
     {
-        // Draw spawn area
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position + new Vector3(0, spawnHeight / 2f, 0),
-                           new Vector3(spawnWidth, spawnHeight, 0));
+        baseFallSpeed = newBaseSpeed;
+        speedIncreaseInterval = newInterval;
+        speedIncreaseAmount = newIncrease;
+        maxFallSpeed = newMax;
+
+        // Update all existing objects
+        FallingObject[] allObjects = FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        foreach (var obj in allObjects)
+        {
+            obj.baseFallSpeed = baseFallSpeed;
+            obj.speedIncreaseInterval = speedIncreaseInterval;
+            obj.speedIncreaseAmount = speedIncreaseAmount;
+            obj.maxFallSpeed = maxFallSpeed;
+            obj.ResetFallSpeed();
+        }
     }
 
     // Public method to add new object types at runtime
-    public void AddObjectType(ObjectType newType, float weight = 1f, bool active = true)
+    public void AddObjectType(ObjectType newType, float weight = 1f)
     {
+        if (newType == null)
+        {
+            Debug.LogError("Cannot add null ObjectType!");
+            return;
+        }
+
         SpawnSettings newSettings = new SpawnSettings
         {
             objectType = newType,
-            spawnWeight = weight,
-            isActive = active
+            spawnWeight = weight
         };
 
         spawnableObjects.Add(newSettings);
+        Debug.Log($"Added object type: {newType.typeName} with weight: {weight}");
     }
 
-    // NEW: Method to toggle object types
-    public void SetObjectActive(string typeName, bool active)
+    // Public method to remove an object type
+    public void RemoveObjectType(string typeName)
     {
-        foreach (var settings in spawnableObjects)
+        for (int i = spawnableObjects.Count - 1; i >= 0; i--)
         {
-            if (settings.objectType.typeName == typeName)
+            if (spawnableObjects[i].objectType.typeName == typeName)
             {
-                settings.isActive = active;
-                Debug.Log($"Object type '{typeName}' is now {(active ? "active" : "inactive")}");
+                spawnableObjects.RemoveAt(i);
+                Debug.Log($"Removed object type: {typeName}");
                 return;
             }
         }
         Debug.LogWarning($"Object type '{typeName}' not found!");
     }
 
-    // NEW: Method to set fall speed for all objects
-    public void SetFallSpeed(float speed)
+    // Public method to clear all object types
+    public void ClearAllObjectTypes()
     {
-        baseFallSpeed = Mathf.Max(0.5f, speed);
+        spawnableObjects.Clear();
+        Debug.Log("All object types cleared!");
+    }
 
-        // Update all existing objects
-        FallingObject[] objects = FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
-        foreach (var obj in objects)
-        {
-            obj.fallSpeed = baseFallSpeed;
-        }
+    // Public method to get spawn settings for debugging
+    public List<SpawnSettings> GetSpawnSettings()
+    {
+        return spawnableObjects;
+    }
 
-        Debug.Log($"Fall speed set to: {baseFallSpeed}");
+    void OnDrawGizmos()
+    {
+        // Draw spawn area at top of screen
+        Gizmos.color = Color.yellow;
+        Vector3 center = new Vector3(0, spawnYPosition, 0);
+        Vector3 size = new Vector3(spawnWidth, 0.5f, 0);
+        Gizmos.DrawWireCube(center, size);
+
+        // Draw a line showing spawn Y position
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(new Vector3(-spawnWidth / 2f, spawnYPosition, 0), new Vector3(spawnWidth / 2f, spawnYPosition, 0));
     }
 }

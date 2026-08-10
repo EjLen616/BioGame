@@ -22,23 +22,40 @@ public class Basket : MonoBehaviour
     private int currentHealthStage = 0; // 0 = neutral, negative = unhealthy, positive = healthy
     public int CurrentHealthStage => currentHealthStage;
 
-    [Header("Settings")]
-    public int maxHealthStages = 3;
-    public int pointsForCorrect = 20;
-    public int pointsForWrong = -10;
+    [Header("Checkmark Settings")]
+    public GameObject checkmarkPrefab; // Assign a green checkmark prefab
+    private GameObject checkmarkInstance;
+    public Vector3 checkmarkOffset = new Vector3(0, 1.5f, 0);
+    private bool isAtMaxHealth = false;
+
+    // Store the original scale to prevent size changes
+    private Vector3 originalScale;
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Store original scale
+        originalScale = transform.localScale;
     }
 
     void Start()
     {
         UpdateAppearance();
+        RemoveCheckmark();
     }
 
     public void HandleObjectCaught(FallingObject fallingObject)
     {
+        // Check if basket is already at max health
+        if (isAtMaxHealth)
+        {
+            Debug.Log($"{basketName} is already at max health! Cannot add more.");
+            // Destroy the object but don't change health
+            Destroy(fallingObject.gameObject);
+            return;
+        }
+
         bool isCorrectObject = false;
 
         // Check if object type is accepted
@@ -54,46 +71,58 @@ public class Basket : MonoBehaviour
         if (isCorrectObject)
         {
             // Move towards healthier stage
-            if (currentHealthStage < maxHealthStages)
+            if (currentHealthStage < 3)
             {
                 currentHealthStage++;
-            }
-
-            // Add points
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.AddScore(pointsForCorrect + fallingObject.objectType.pointValue);
             }
 
             // Play correct catch sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayCorrectCatchSound();
 
+            // Add points using GameManager's settings
+            if (GameManager.Instance != null)
+            {
+                int pointsToAdd = GameManager.Instance.pointsForCorrectCatch + fallingObject.objectType.pointValue;
+                GameManager.Instance.AddScore(pointsToAdd);
+            }
+
+            // Play point gain sound
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayPointGainSound();
+
             Debug.Log("Correct object caught by " + basketName + "!");
         }
         else
         {
             // Move towards unhealthier stage
-            if (currentHealthStage > -maxHealthStages)
+            if (currentHealthStage > -3)
             {
                 currentHealthStage--;
-            }
-
-            // Deduct points
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.AddScore(pointsForWrong);
             }
 
             // Play wrong catch sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayWrongCatchSound();
 
+            // Deduct points using GameManager's settings
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddScore(GameManager.Instance.pointsForWrongCatch);
+            }
+
+            // Play point lose sound
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayPointLoseSound();
+
             Debug.Log("Wrong object caught by " + basketName + "!");
         }
 
         // Update basket appearance
         UpdateAppearance();
+
+        // Check if at max health
+        CheckMaxHealth();
 
         // Notify GameManager
         if (GameManager.Instance != null)
@@ -115,6 +144,9 @@ public class Basket : MonoBehaviour
         {
             spriteRenderer.sprite = currentStage.sprite;
             spriteRenderer.color = currentStage.color;
+
+            // IMPORTANT: Reset scale to original to prevent shrinking
+            transform.localScale = originalScale;
         }
     }
 
@@ -138,6 +170,51 @@ public class Basket : MonoBehaviour
         }
 
         return neutralStage;
+    }
+
+    void CheckMaxHealth()
+    {
+        if (currentHealthStage >= 3 && !isAtMaxHealth)
+        {
+            isAtMaxHealth = true;
+            ShowCheckmark();
+            Debug.Log($"{basketName} reached max health! Checkmark added.");
+        }
+    }
+
+    void ShowCheckmark()
+    {
+        RemoveCheckmark(); // Remove any existing checkmark
+
+        if (checkmarkPrefab != null)
+        {
+            checkmarkInstance = Instantiate(checkmarkPrefab, transform.position + checkmarkOffset, Quaternion.identity);
+            checkmarkInstance.transform.SetParent(transform);
+
+            Debug.Log($"Checkmark added to {basketName}");
+        }
+        else
+        {
+            Debug.LogWarning($"No checkmark prefab assigned to {basketName}!");
+        }
+    }
+
+    void RemoveCheckmark()
+    {
+        if (checkmarkInstance != null)
+        {
+            Destroy(checkmarkInstance);
+            checkmarkInstance = null;
+        }
+    }
+
+    public void ResetBasket()
+    {
+        currentHealthStage = 0;
+        isAtMaxHealth = false;
+        RemoveCheckmark();
+        transform.localScale = originalScale; // Reset scale
+        UpdateAppearance();
     }
 
     void OnDrawGizmos()

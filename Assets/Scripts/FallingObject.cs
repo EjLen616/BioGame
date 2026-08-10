@@ -15,24 +15,28 @@ public class FallingObject : MonoBehaviour
     public ObjectType objectType;
 
     [Header("Movement Settings")]
-    public float fallSpeed = 3f;
+    public float baseFallSpeed = 3f;
+    public float currentFallSpeed;
     public float rotationSpeed = 50f;
     public float wiggleAmount = 0.5f;
     public float wiggleSpeed = 2f;
 
-    [Header("Penalty Settings")]
-    public int missedPenalty = -50; // NEW: Points lost when object falls off screen
-    public bool enablePenalty = true; // NEW: Toggle penalty
+    [Header("Speed Increase Settings")]
+    public float speedIncreaseInterval = 3f; // How often speed increases (seconds)
+    public float speedIncreaseAmount = 0.5f; // How much speed increases each time
+    public float maxFallSpeed = 10f; // Maximum speed limit
 
     [Header("References")]
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Collider2D col;
+    private Color originalColor; // Store original color
 
     private bool isBeingDragged = false;
     private Vector3 startPosition;
     private float initialY;
-    private bool hasBeenPenalized = false; // NEW: Prevent multiple penalties
+    private float nextSpeedIncreaseTime;
+    private bool hasBeenMissed = false; // Prevents double penalty
 
     void Awake()
     {
@@ -45,7 +49,15 @@ public class FallingObject : MonoBehaviour
     {
         InitializeObject();
         initialY = transform.position.y;
-        hasBeenPenalized = false;
+        currentFallSpeed = baseFallSpeed;
+        nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
+        hasBeenMissed = false;
+
+        // Store original color
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
     }
 
     void InitializeObject()
@@ -56,6 +68,7 @@ public class FallingObject : MonoBehaviour
             {
                 spriteRenderer.sprite = objectType.sprite;
                 spriteRenderer.color = objectType.color;
+                originalColor = objectType.color;
             }
         }
 
@@ -70,8 +83,11 @@ public class FallingObject : MonoBehaviour
     {
         if (!isBeingDragged)
         {
-            // Fall downwards
-            transform.position += Vector3.down * fallSpeed * Time.deltaTime;
+            // Increase speed over time
+            UpdateFallSpeed();
+
+            // Fall downwards with current speed
+            transform.position += Vector3.down * currentFallSpeed * Time.deltaTime;
 
             // Add some rotation
             transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
@@ -80,36 +96,41 @@ public class FallingObject : MonoBehaviour
             float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
             transform.position += new Vector3(wiggle, 0, 0);
 
-            // Check if object fell below screen
-            if (transform.position.y < -10f && !hasBeenPenalized)
+            // Destroy if below screen and apply penalty
+            if (transform.position.y < -10f)
             {
-                ApplyMissPenalty();
-                Destroy(gameObject);
+                HandleObjectMissed();
             }
         }
     }
 
-    void ApplyMissPenalty() // NEW: Apply penalty when object is missed
+    void HandleObjectMissed()
     {
-        if (!enablePenalty) return;
+        // Prevent double penalty
+        if (hasBeenMissed) return;
+        hasBeenMissed = true;
 
-        hasBeenPenalized = true;
-
-        // Apply penalty to game manager
+        // Notify GameManager about missed object
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.AddScore(missedPenalty);
-            Debug.Log($"Missed {objectType.typeName}! Penalty: {missedPenalty} points");
-
-            // Play penalty sound if available
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlayPointLoseSound();
-            }
+            GameManager.Instance.ObjectMissed();
         }
-        else
+
+        // Destroy the object
+        Destroy(gameObject);
+    }
+
+    void UpdateFallSpeed()
+    {
+        // Check if it's time to increase speed
+        if (Time.time >= nextSpeedIncreaseTime && currentFallSpeed < maxFallSpeed)
         {
-            Debug.LogWarning("GameManager.Instance is null, cannot apply penalty!");
+            currentFallSpeed = Mathf.Min(currentFallSpeed + speedIncreaseAmount, maxFallSpeed);
+            nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
+
+            // REMOVED: Color change that was making vitamins red
+            // Now just log the speed change
+            Debug.Log($"Speed increased to {currentFallSpeed}");
         }
     }
 
@@ -179,6 +200,18 @@ public class FallingObject : MonoBehaviour
     {
         objectType = type;
         InitializeObject();
+    }
+
+    public void ResetFallSpeed()
+    {
+        currentFallSpeed = baseFallSpeed;
+        nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
+
+        // Reset color to original
+        if (spriteRenderer != null && objectType != null)
+        {
+            spriteRenderer.color = originalColor;
+        }
     }
 
     void OnDestroy()

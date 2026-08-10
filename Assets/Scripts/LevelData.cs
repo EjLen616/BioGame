@@ -14,6 +14,17 @@ public class LevelData : ScriptableObject
     public float spawnRate = 1.5f;
     public int maxObjectsOnScreen = 15;
 
+    // Speed settings
+    public float baseFallSpeed = 3f;
+    public float speedIncreaseInterval = 3f;
+    public float speedIncreaseAmount = 0.5f;
+    public float maxFallSpeed = 10f;
+
+    // Score settings
+    public int pointsForCorrectCatch = 20;
+    public int pointsForWrongCatch = -10;
+    public int pointsForMissedObject = -5;
+
     [System.NonSerialized]
     public bool isUnlocked = false;
     [System.NonSerialized]
