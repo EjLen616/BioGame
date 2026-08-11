@@ -7,7 +7,7 @@ public class ObjectType
     public Sprite sprite;
     public Color color = Color.white;
     public int pointValue = 10;
-    public string[] acceptedBaskets; // Which baskets accept this object
+    public string[] acceptedBaskets;
 }
 
 public class FallingObject : MonoBehaviour
@@ -22,21 +22,22 @@ public class FallingObject : MonoBehaviour
     public float wiggleSpeed = 2f;
 
     [Header("Speed Increase Settings")]
-    public float speedIncreaseInterval = 3f; // How often speed increases (seconds)
-    public float speedIncreaseAmount = 0.5f; // How much speed increases each time
-    public float maxFallSpeed = 10f; // Maximum speed limit
+    public float speedIncreaseInterval = 3f;
+    public float speedIncreaseAmount = 0.5f;
+    public float maxFallSpeed = 10f;
 
     [Header("References")]
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Collider2D col;
-    private Color originalColor; // Store original color
+    private Color originalColor;
 
     private bool isBeingDragged = false;
     private Vector3 startPosition;
     private float initialY;
     private float nextSpeedIncreaseTime;
-    private bool hasBeenMissed = false; // Prevents double penalty
+    private bool hasBeenMissed = false;
+    private bool isBeingDestroyed = false;
 
     void Awake()
     {
@@ -52,8 +53,8 @@ public class FallingObject : MonoBehaviour
         currentFallSpeed = baseFallSpeed;
         nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
         hasBeenMissed = false;
+        isBeingDestroyed = false;
 
-        // Store original color
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
@@ -72,7 +73,6 @@ public class FallingObject : MonoBehaviour
             }
         }
 
-        // Set gravity scale to 0 since we'll control falling manually
         if (rb != null)
         {
             rb.gravityScale = 0f;
@@ -83,20 +83,14 @@ public class FallingObject : MonoBehaviour
     {
         if (!isBeingDragged)
         {
-            // Increase speed over time
             UpdateFallSpeed();
 
-            // Fall downwards with current speed
             transform.position += Vector3.down * currentFallSpeed * Time.deltaTime;
-
-            // Add some rotation
             transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
-            // Add slight wiggle for visual interest
             float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
             transform.position += new Vector3(wiggle, 0, 0);
 
-            // Destroy if below screen and apply penalty
             if (transform.position.y < -10f)
             {
                 HandleObjectMissed();
@@ -106,30 +100,29 @@ public class FallingObject : MonoBehaviour
 
     void HandleObjectMissed()
     {
-        // Prevent double penalty
-        if (hasBeenMissed) return;
+        if (hasBeenMissed || isBeingDestroyed) return;
         hasBeenMissed = true;
+        isBeingDestroyed = true;
 
-        // Notify GameManager about missed object
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayVitaminDestroyedSound();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ObjectMissed();
         }
 
-        // Destroy the object
         Destroy(gameObject);
     }
 
     void UpdateFallSpeed()
     {
-        // Check if it's time to increase speed
         if (Time.time >= nextSpeedIncreaseTime && currentFallSpeed < maxFallSpeed)
         {
             currentFallSpeed = Mathf.Min(currentFallSpeed + speedIncreaseAmount, maxFallSpeed);
             nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
-
-            // REMOVED: Color change that was making vitamins red
-            // Now just log the speed change
             Debug.Log($"Speed increased to {currentFallSpeed}");
         }
     }
@@ -145,9 +138,13 @@ public class FallingObject : MonoBehaviour
             rb.gravityScale = 0f;
         }
 
-        // Bring to front while dragging
         if (spriteRenderer != null)
             spriteRenderer.sortingOrder = 10;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayVitaminCaughtMidAirSound();
+        }
     }
 
     void OnMouseDrag()
@@ -166,11 +163,9 @@ public class FallingObject : MonoBehaviour
         {
             isBeingDragged = false;
 
-            // Reset sorting order
             if (spriteRenderer != null)
                 spriteRenderer.sortingOrder = 0;
 
-            // Check if over a basket
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
 
             bool caughtByBasket = false;
@@ -185,7 +180,6 @@ public class FallingObject : MonoBehaviour
                 }
             }
 
-            // If not caught by basket, resume falling
             if (!caughtByBasket)
             {
                 if (rb != null)
@@ -207,7 +201,6 @@ public class FallingObject : MonoBehaviour
         currentFallSpeed = baseFallSpeed;
         nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
 
-        // Reset color to original
         if (spriteRenderer != null && objectType != null)
         {
             spriteRenderer.color = originalColor;
@@ -216,7 +209,15 @@ public class FallingObject : MonoBehaviour
 
     void OnDestroy()
     {
-        // Notify ObjectSpawner if needed
+        if (!isBeingDestroyed)
+        {
+            isBeingDestroyed = true;
+            if (AudioManager.Instance != null && !hasBeenMissed)
+            {
+                AudioManager.Instance.PlayVitaminDestroyedSound();
+            }
+        }
+
         ObjectSpawner spawner = FindFirstObjectByType<ObjectSpawner>();
         if (spawner != null)
         {

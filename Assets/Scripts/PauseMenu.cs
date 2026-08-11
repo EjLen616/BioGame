@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;  // <-- DODAJ TO
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
@@ -18,10 +18,43 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
+        if (pausePanel == null)
+        {
+            pausePanel = transform.Find("PausePanel")?.gameObject;
+            if (pausePanel == null)
+            {
+                Debug.LogWarning("PausePanel not assigned and could not be found!");
+            }
+        }
+
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
-        // Setup buttons
+        SetupButtons();
+    }
+
+    void SetupButtons()
+    {
+        if (resumeButton == null && pausePanel != null)
+        {
+            resumeButton = pausePanel.transform.Find("ResumeButton")?.GetComponent<Button>();
+        }
+
+        if (settingsButton == null && pausePanel != null)
+        {
+            settingsButton = pausePanel.transform.Find("SettingsButton")?.GetComponent<Button>();
+        }
+
+        if (mainMenuButton == null && pausePanel != null)
+        {
+            mainMenuButton = pausePanel.transform.Find("MainMenuButton")?.GetComponent<Button>();
+        }
+
+        if (quitButton == null && pausePanel != null)
+        {
+            quitButton = pausePanel.transform.Find("QuitButton")?.GetComponent<Button>();
+        }
+
         if (resumeButton != null)
             resumeButton.onClick.AddListener(ResumeGame);
 
@@ -51,17 +84,31 @@ public class PauseMenu : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PauseAllAudio();
+        }
+
         if (pausePanel != null)
+        {
             pausePanel.SetActive(true);
+        }
 
         if (AudioManager.Instance != null)
+        {
             AudioManager.Instance.PlayButtonClick();
+        }
     }
 
     void ResumeGame()
     {
         isPaused = false;
         Time.timeScale = 1f;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResumeAllAudio();
+        }
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
@@ -76,7 +123,9 @@ public class PauseMenu : MonoBehaviour
     void OpenSettings()
     {
         if (settingsMenu != null)
+        {
             settingsMenu.OpenSettings();
+        }
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
@@ -87,7 +136,10 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
 
         if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ResumeAllAudio();
             AudioManager.Instance.PlayButtonClick();
+        }
 
         SceneManager.LoadScene("MainMenu");
     }

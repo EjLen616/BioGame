@@ -15,8 +15,6 @@ public class UISoundHelper : MonoBehaviour
     void PlayClickSound()
     {
         if (AudioManager.Instance != null)
-        {
             AudioManager.Instance.PlayButtonClick();
-        }
     }
 }

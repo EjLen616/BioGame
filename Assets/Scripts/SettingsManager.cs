@@ -11,8 +11,7 @@ public class SettingsManager : MonoBehaviour
     [Range(0f, 1f)]
     public float sfxVolume = 0.7f;
 
-    [Header("Save Settings")]
-    public string saveFileName = "gamesettings.json";
+    private string saveFilePath;
 
     [System.Serializable]
     public class SettingsData
@@ -27,6 +26,7 @@ public class SettingsManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            saveFilePath = Path.Combine(Application.persistentDataPath, "settings.json");
             LoadSettings();
             ApplySettings();
         }
@@ -68,17 +68,14 @@ public class SettingsManager : MonoBehaviour
         };
 
         string json = JsonUtility.ToJson(data, true);
-        string filePath = Path.Combine(Application.persistentDataPath, saveFileName);
-        File.WriteAllText(filePath, json);
+        File.WriteAllText(saveFilePath, json);
     }
 
     void LoadSettings()
     {
-        string filePath = Path.Combine(Application.persistentDataPath, saveFileName);
-
-        if (File.Exists(filePath))
+        if (File.Exists(saveFilePath))
         {
-            string json = File.ReadAllText(filePath);
+            string json = File.ReadAllText(saveFilePath);
             SettingsData data = JsonUtility.FromJson<SettingsData>(json);
 
             if (data != null)

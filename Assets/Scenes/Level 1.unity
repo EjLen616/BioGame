@@ -1193,7 +1193,9 @@ MonoBehaviour:
   - sprite: {fileID: -5502270858350525211, guid: a057c753b0daace45a15d8cba95b56c7, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &751548607
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1885,7 +1887,9 @@ MonoBehaviour:
   - sprite: {fileID: 2469017502162092336, guid: fe604433ada45f848a75d83ed76b2f03, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1118065820
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2244,7 +2248,9 @@ MonoBehaviour:
   - sprite: {fileID: 891382029172425249, guid: f3c628cafae02424b94da22930d4ef89, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1232383732
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2733,7 +2739,9 @@ MonoBehaviour:
   - sprite: {fileID: 5336493752270808784, guid: 832d6508c94799a468e433e078d3831d, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1542629764
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3083,7 +3091,9 @@ MonoBehaviour:
   - sprite: {fileID: -8082650579942943322, guid: 78935296bcb9cdb42933943553ba01d8, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1746500700
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3244,7 +3254,9 @@ MonoBehaviour:
   - sprite: {fileID: -7821033927521896881, guid: 854ebd5ca3694454787096140743d10a, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1777501460
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3405,7 +3417,9 @@ MonoBehaviour:
   - sprite: {fileID: -767344516907982641, guid: 1f686853147bf37419a3e1bba380ab9a, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
   checkmarkPrefab: {fileID: 6497685100727095932, guid: 59f49ce0af5ecab40b05bffa1784da0a, type: 3}
+  redXPrefab: {fileID: 7400847030170038206, guid: 780981ab8ae4dff4ebc5d8a7e577b41f, type: 3}
   checkmarkOffset: {x: 0, y: 0, z: 0}
+  redXOffset: {x: 0, y: 0, z: 0}
 --- !u!58 &1896158270
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3547,6 +3561,8 @@ MonoBehaviour:
   pointsForCorrectCatch: 20
   pointsForWrongCatch: -10
   pointsForMissedObject: -5
+  scoreLoseThreshold: -100
+  basketsNeededToWin: 2
 --- !u!4 &1912491841
 Transform:
   m_ObjectHideFlags: 0

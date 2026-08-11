@@ -24,7 +24,11 @@ public class GameManager : MonoBehaviour
     [Header("Score Settings")]
     public int pointsForCorrectCatch = 20;
     public int pointsForWrongCatch = -10;
-    public int pointsForMissedObject = -5; // Points lost when object falls off screen
+    public int pointsForMissedObject = -5;
+
+    [Header("Win/Lose Conditions")]
+    public int scoreLoseThreshold = -100; // Score at which you lose
+    public int basketsNeededToWin = 2; // How many baskets need green checkmarks to win
 
     void Awake()
     {
@@ -70,34 +74,110 @@ public class GameManager : MonoBehaviour
 
         if (baskets.Length == 0) return;
 
-        // Check win/lose conditions
-        bool allWorst = true;
-        bool allBest = true;
+        // Check win conditions
+        CheckWinCondition();
+
+        // Check lose conditions
+        CheckLoseCondition();
+
+        UpdateUI();
+    }
+
+    void CheckWinCondition()
+    {
+        if (CurrentState != GameState.Playing) return;
+
+        if (baskets == null || baskets.Length == 0)
+        {
+            FindAllBaskets();
+            if (baskets == null || baskets.Length == 0) return;
+        }
+
+        // Count how many baskets are at max health (green checkmark)
+        int healthyBaskets = 0;
+        foreach (Basket basket in baskets)
+        {
+            if (basket != null && basket.CurrentHealthStage >= 3)
+            {
+                healthyBaskets++;
+            }
+        }
+
+        // Win if we have enough healthy baskets
+        if (healthyBaskets >= basketsNeededToWin)
+        {
+            WinGame();
+        }
+    }
+
+    void CheckLoseCondition()
+    {
+        if (CurrentState != GameState.Playing) return;
+
+        if (baskets == null || baskets.Length == 0)
+        {
+            FindAllBaskets();
+            if (baskets == null || baskets.Length == 0) return;
+        }
+
+        // Count how many baskets are at worst health (red X)
+        int worstBaskets = 0;
+        foreach (Basket basket in baskets)
+        {
+            if (basket != null && basket.CurrentHealthStage <= -3)
+            {
+                worstBaskets++;
+            }
+        }
+
+        // Check if any basket is at worst health AND another is at max health
+        // OR if we have two worst baskets
+        bool hasHealthy = false;
+        bool hasWorst = false;
 
         foreach (Basket basket in baskets)
         {
             if (basket != null)
             {
-                if (basket.CurrentHealthStage > -3) allWorst = false;
-                if (basket.CurrentHealthStage < 3) allBest = false;
+                if (basket.CurrentHealthStage >= 3)
+                    hasHealthy = true;
+                if (basket.CurrentHealthStage <= -3)
+                    hasWorst = true;
             }
         }
 
-        if (allWorst)
+        // Lose condition 1: Two worst baskets (red X)
+        if (worstBaskets >= 2)
         {
             LoseGame();
-        }
-        else if (allBest)
-        {
-            WinGame();
+            return;
         }
 
-        UpdateUI();
+        // Lose condition 2: One healthy (green) AND one worst (red X)
+        if (hasHealthy && hasWorst)
+        {
+            LoseGame();
+            return;
+        }
+
+        // Lose condition 3: Score drops to -100 or below
+        if (score <= scoreLoseThreshold)
+        {
+            LoseGame();
+            return;
+        }
     }
 
     public void AddScore(int points)
     {
         score += points;
+
+        // Check lose condition immediately after score change
+        if (score <= scoreLoseThreshold && CurrentState == GameState.Playing)
+        {
+            LoseGame();
+        }
+
         UpdateUI();
     }
 
@@ -135,7 +215,7 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0f;
         }
 
-        Debug.Log("You Win!");
+        Debug.Log("You Win! Two body parts are healthy!");
     }
 
     void LoseGame()
@@ -154,7 +234,31 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0f;
         }
 
-        Debug.Log("Game Over!");
+        // Determine lose reason for debugging
+        string reason = "";
+
+        // Count baskets
+        int worstBaskets = 0;
+        int healthyBaskets = 0;
+        foreach (Basket basket in baskets)
+        {
+            if (basket != null)
+            {
+                if (basket.CurrentHealthStage >= 3)
+                    healthyBaskets++;
+                if (basket.CurrentHealthStage <= -3)
+                    worstBaskets++;
+            }
+        }
+
+        if (score <= scoreLoseThreshold)
+            reason = $"Score reached {score} (below {scoreLoseThreshold})";
+        else if (worstBaskets >= 2)
+            reason = "Two body parts at worst health";
+        else if (healthyBaskets >= 1 && worstBaskets >= 1)
+            reason = "One healthy and one worst body part";
+
+        Debug.Log($"Game Over! {reason}");
     }
 
     public void RestartGame()

@@ -10,39 +10,42 @@ public class HealthStage
 public class Basket : MonoBehaviour
 {
     public string basketName;
-    public string[] acceptedObjectTypes; // Which object types this basket accepts
+    public string[] acceptedObjectTypes;
 
     [Header("Health Stages")]
-    public HealthStage[] unhealthyStages = new HealthStage[3]; // Index 0 = worst, 2 = least bad
+    public HealthStage[] unhealthyStages = new HealthStage[3];
     public HealthStage neutralStage;
-    public HealthStage[] healthyStages = new HealthStage[3]; // Index 0 = least healthy, 2 = healthiest
+    public HealthStage[] healthyStages = new HealthStage[3];
 
     [Header("References")]
     private SpriteRenderer spriteRenderer;
-    private int currentHealthStage = 0; // 0 = neutral, negative = unhealthy, positive = healthy
+    private int currentHealthStage = 0;
     public int CurrentHealthStage => currentHealthStage;
 
     [Header("Checkmark Settings")]
-    public GameObject checkmarkPrefab; // Assign a green checkmark prefab
-    private GameObject checkmarkInstance;
-    public Vector3 checkmarkOffset = new Vector3(0, 1.5f, 0);
-    private bool isAtMaxHealth = false;
+    public GameObject checkmarkPrefab; // Green checkmark
+    public GameObject redXPrefab; // Red X for worst state
 
-    // Store the original scale to prevent size changes
+    private GameObject checkmarkInstance;
+    private GameObject redXInstance;
+
+    public Vector3 checkmarkOffset = new Vector3(0, 1.5f, 0);
+    public Vector3 redXOffset = new Vector3(0, 1.5f, 0);
+
+    private bool isAtMaxHealth = false;
+    private bool isAtWorstHealth = false;
     private Vector3 originalScale;
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        // Store original scale
         originalScale = transform.localScale;
     }
 
     void Start()
     {
         UpdateAppearance();
-        RemoveCheckmark();
+        RemoveAllIndicators();
     }
 
     public void HandleObjectCaught(FallingObject fallingObject)
@@ -51,14 +54,20 @@ public class Basket : MonoBehaviour
         if (isAtMaxHealth)
         {
             Debug.Log($"{basketName} is already at max health! Cannot add more.");
-            // Destroy the object but don't change health
+            Destroy(fallingObject.gameObject);
+            return;
+        }
+
+        // Check if basket is already at worst health
+        if (isAtWorstHealth)
+        {
+            Debug.Log($"{basketName} is already at worst health! Cannot add more.");
             Destroy(fallingObject.gameObject);
             return;
         }
 
         bool isCorrectObject = false;
 
-        // Check if object type is accepted
         foreach (string acceptedType in acceptedObjectTypes)
         {
             if (fallingObject.objectType.typeName == acceptedType)
@@ -70,24 +79,20 @@ public class Basket : MonoBehaviour
 
         if (isCorrectObject)
         {
-            // Move towards healthier stage
             if (currentHealthStage < 3)
             {
                 currentHealthStage++;
             }
 
-            // Play correct catch sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayCorrectCatchSound();
 
-            // Add points using GameManager's settings
             if (GameManager.Instance != null)
             {
                 int pointsToAdd = GameManager.Instance.pointsForCorrectCatch + fallingObject.objectType.pointValue;
                 GameManager.Instance.AddScore(pointsToAdd);
             }
 
-            // Play point gain sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayPointGainSound();
 
@@ -95,42 +100,33 @@ public class Basket : MonoBehaviour
         }
         else
         {
-            // Move towards unhealthier stage
             if (currentHealthStage > -3)
             {
                 currentHealthStage--;
             }
 
-            // Play wrong catch sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayWrongCatchSound();
 
-            // Deduct points using GameManager's settings
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.AddScore(GameManager.Instance.pointsForWrongCatch);
             }
 
-            // Play point lose sound
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlayPointLoseSound();
 
             Debug.Log("Wrong object caught by " + basketName + "!");
         }
 
-        // Update basket appearance
         UpdateAppearance();
+        CheckHealthStates();
 
-        // Check if at max health
-        CheckMaxHealth();
-
-        // Notify GameManager
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateBasketHealth(GetInstanceID(), currentHealthStage);
         }
 
-        // Destroy the object
         Destroy(fallingObject.gameObject);
     }
 
@@ -144,8 +140,6 @@ public class Basket : MonoBehaviour
         {
             spriteRenderer.sprite = currentStage.sprite;
             spriteRenderer.color = currentStage.color;
-
-            // IMPORTANT: Reset scale to original to prevent shrinking
             transform.localScale = originalScale;
         }
     }
@@ -156,13 +150,13 @@ public class Basket : MonoBehaviour
         {
             return neutralStage;
         }
-        else if (currentHealthStage > 0) // Healthy stages
+        else if (currentHealthStage > 0)
         {
             int index = Mathf.Min(currentHealthStage - 1, healthyStages.Length - 1);
             if (index >= 0 && index < healthyStages.Length)
                 return healthyStages[index];
         }
-        else // Unhealthy stages
+        else
         {
             int index = Mathf.Min(Mathf.Abs(currentHealthStage) - 1, unhealthyStages.Length - 1);
             if (index >= 0 && index < unhealthyStages.Length)
@@ -172,30 +166,69 @@ public class Basket : MonoBehaviour
         return neutralStage;
     }
 
-    void CheckMaxHealth()
+    void CheckHealthStates()
     {
+        // Check for max health (Green checkmark)
         if (currentHealthStage >= 3 && !isAtMaxHealth)
         {
             isAtMaxHealth = true;
             ShowCheckmark();
-            Debug.Log($"{basketName} reached max health! Checkmark added.");
+            Debug.Log($"{basketName} reached max health! Green checkmark added.");
+        }
+
+        // Check for worst health (Red X)
+        if (currentHealthStage <= -3 && !isAtWorstHealth)
+        {
+            isAtWorstHealth = true;
+            ShowRedX();
+            Debug.Log($"{basketName} reached worst health! Red X added.");
         }
     }
 
     void ShowCheckmark()
     {
-        RemoveCheckmark(); // Remove any existing checkmark
+        RemoveAllIndicators();
 
         if (checkmarkPrefab != null)
         {
             checkmarkInstance = Instantiate(checkmarkPrefab, transform.position + checkmarkOffset, Quaternion.identity);
             checkmarkInstance.transform.SetParent(transform);
-
-            Debug.Log($"Checkmark added to {basketName}");
+            Debug.Log($"Green checkmark added to {basketName}");
         }
         else
         {
             Debug.LogWarning($"No checkmark prefab assigned to {basketName}!");
+        }
+    }
+
+    void ShowRedX()
+    {
+        RemoveAllIndicators();
+
+        if (redXPrefab != null)
+        {
+            redXInstance = Instantiate(redXPrefab, transform.position + redXOffset, Quaternion.identity);
+            redXInstance.transform.SetParent(transform);
+            Debug.Log($"Red X added to {basketName}");
+        }
+        else
+        {
+            Debug.LogWarning($"No red X prefab assigned to {basketName}!");
+        }
+    }
+
+    void RemoveAllIndicators()
+    {
+        if (checkmarkInstance != null)
+        {
+            Destroy(checkmarkInstance);
+            checkmarkInstance = null;
+        }
+
+        if (redXInstance != null)
+        {
+            Destroy(redXInstance);
+            redXInstance = null;
         }
     }
 
@@ -208,18 +241,27 @@ public class Basket : MonoBehaviour
         }
     }
 
+    void RemoveRedX()
+    {
+        if (redXInstance != null)
+        {
+            Destroy(redXInstance);
+            redXInstance = null;
+        }
+    }
+
     public void ResetBasket()
     {
         currentHealthStage = 0;
         isAtMaxHealth = false;
-        RemoveCheckmark();
-        transform.localScale = originalScale; // Reset scale
+        isAtWorstHealth = false;
+        RemoveAllIndicators();
+        transform.localScale = originalScale;
         UpdateAppearance();
     }
 
     void OnDrawGizmos()
     {
-        // Visualize basket area
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, 1f);
     }
