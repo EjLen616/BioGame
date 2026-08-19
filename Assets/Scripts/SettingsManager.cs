@@ -69,6 +69,7 @@ public class SettingsManager : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(saveFilePath, json);
+        Debug.Log($"Settings saved to: {saveFilePath}");
     }
 
     void LoadSettings()
@@ -82,7 +83,12 @@ public class SettingsManager : MonoBehaviour
             {
                 musicVolume = data.musicVolume;
                 sfxVolume = data.sfxVolume;
+                Debug.Log("Settings loaded successfully!");
             }
+        }
+        else
+        {
+            Debug.Log("No settings file found, using defaults.");
         }
     }
 
@@ -92,5 +98,6 @@ public class SettingsManager : MonoBehaviour
         sfxVolume = 0.7f;
         ApplySettings();
         SaveSettings();
+        Debug.Log("Settings reset to defaults!");
     }
 }

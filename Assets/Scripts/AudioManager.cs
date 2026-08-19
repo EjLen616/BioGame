@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class AudioManager : MonoBehaviour
     [Header("Music")]
     public AudioClip menuMusic;
     public AudioClip[] gameMusicTracks; // 3 tracks for random play in game
+    public bool shuffleMusic = true;
 
     [Header("Sound Effects")]
     public AudioClip buttonClickSound;
@@ -30,7 +32,7 @@ public class AudioManager : MonoBehaviour
     private float musicVolume = 0.7f;
     private float sfxVolume = 0.7f;
     private bool isPaused = false;
-    private string currentSceneType = "Menu"; // "Menu" or "Game"
+    private string currentSceneType = "Menu";
 
     void Awake()
     {
@@ -39,7 +41,9 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeAudioSources();
-            LoadSettings();
+
+            // Subscribe to scene changes
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
@@ -49,8 +53,19 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        // Detect current scene type
+        LoadSettings();
         DetectSceneAndPlayMusic();
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Small delay to let scene fully load
+        Invoke(nameof(DetectSceneAndPlayMusic), 0.1f);
     }
 
     void InitializeAudioSources()
@@ -93,7 +108,8 @@ public class AudioManager : MonoBehaviour
 
     public void DetectSceneAndPlayMusic()
     {
-        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        string sceneName = SceneManager.GetActiveScene().name;
+        Debug.Log($"Scene loaded: {sceneName}");
 
         if (sceneName == "MainMenu" || sceneName == "Menu")
         {
@@ -136,7 +152,10 @@ public class AudioManager : MonoBehaviour
         currentSceneType = "Game";
 
         remainingTracks = new List<AudioClip>(gameMusicTracks);
-        ShuffleRemainingTracks();
+        if (shuffleMusic)
+        {
+            ShuffleRemainingTracks();
+        }
         PlayNextRandomTrack();
     }
 
@@ -158,7 +177,10 @@ public class AudioManager : MonoBehaviour
         if (remainingTracks == null || remainingTracks.Count == 0)
         {
             remainingTracks = new List<AudioClip>(gameMusicTracks);
-            ShuffleRemainingTracks();
+            if (shuffleMusic)
+            {
+                ShuffleRemainingTracks();
+            }
         }
 
         if (remainingTracks.Count > 0)
@@ -172,9 +194,14 @@ public class AudioManager : MonoBehaviour
                 musicSource.loop = false;
                 musicSource.Play();
                 isMusicPlaying = true;
+                Debug.Log($"Playing game track: {nextTrack.name}");
 
                 // Schedule next track
                 Invoke(nameof(PlayNextRandomTrack), nextTrack.length);
+            }
+            else
+            {
+                PlayNextRandomTrack();
             }
         }
     }
@@ -221,12 +248,31 @@ public class AudioManager : MonoBehaviour
                 else
                     PlayGameMusic();
             }
+            else if (!musicSource.isPlaying && musicSource.clip != null)
+            {
+                musicSource.Play();
+                isMusicPlaying = true;
+            }
         }
 
         if (sfxSource != null)
             sfxSource.UnPause();
         if (uiSource != null)
             uiSource.UnPause();
+
+        // Restart music scheduling if needed
+        if (currentSceneType == "Game" && musicSource != null && musicSource.clip != null && !musicSource.loop)
+        {
+            float remainingTime = musicSource.clip.length - musicSource.time;
+            if (remainingTime > 0)
+            {
+                Invoke(nameof(PlayNextRandomTrack), remainingTime);
+            }
+            else
+            {
+                PlayNextRandomTrack();
+            }
+        }
     }
 
     // Sound Effects
