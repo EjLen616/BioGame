@@ -6,6 +6,7 @@ public class MainMenuUI : MonoBehaviour
 {
     [Header("Buttons")]
     public Button playButton;
+    public Button endlessButton; // NEW: Endless mode button
     public Button settingsButton;
     public Button quitButton;
 
@@ -25,6 +26,9 @@ public class MainMenuUI : MonoBehaviour
         if (playButton != null)
             playButton.onClick.AddListener(OnPlayClicked);
 
+        if (endlessButton != null)
+            endlessButton.onClick.AddListener(OnEndlessClicked); // NEW
+
         if (settingsButton != null)
             settingsButton.onClick.AddListener(OnSettingsClicked);
 
@@ -38,17 +42,31 @@ public class MainMenuUI : MonoBehaviour
         if (closeSettingsButton != null)
             closeSettingsButton.onClick.AddListener(CloseSettings);
 
-        // Setup sliders
-        if (musicSlider != null && SettingsManager.Instance != null)
+        SetupSettingsSliders();
+    }
+
+    void SetupSettingsSliders()
+    {
+        if (musicSlider != null)
         {
-            musicSlider.value = SettingsManager.Instance.musicVolume;
+            musicSlider.onValueChanged.RemoveAllListeners();
             musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+
+            if (SettingsManager.Instance != null)
+            {
+                musicSlider.value = SettingsManager.Instance.musicVolume;
+            }
         }
 
-        if (sfxSlider != null && SettingsManager.Instance != null)
+        if (sfxSlider != null)
         {
-            sfxSlider.value = SettingsManager.Instance.sfxVolume;
+            sfxSlider.onValueChanged.RemoveAllListeners();
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+
+            if (SettingsManager.Instance != null)
+            {
+                sfxSlider.value = SettingsManager.Instance.sfxVolume;
+            }
         }
     }
 
@@ -57,8 +75,17 @@ public class MainMenuUI : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
 
-        // Load your first level scene
-        SceneManager.LoadScene("Level1"); // Change to your first level name
+        // Load normal mode (level based)
+        SceneManager.LoadScene("Level1");
+    }
+
+    void OnEndlessClicked() // NEW
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayButtonClick();
+
+        // Load endless mode scene
+        SceneManager.LoadScene("EndlessMode");
     }
 
     void OnSettingsClicked()
@@ -69,7 +96,6 @@ public class MainMenuUI : MonoBehaviour
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(true);
-            // Refresh slider values
             if (musicSlider != null && SettingsManager.Instance != null)
                 musicSlider.value = SettingsManager.Instance.musicVolume;
             if (sfxSlider != null && SettingsManager.Instance != null)

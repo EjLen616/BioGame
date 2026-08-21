@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject pausePanel; // This panel contains everything (pause + settings)
+    public GameObject pausePanel;
 
     [Header("Buttons")]
     public Button resumeButton;
@@ -16,11 +16,11 @@ public class PauseMenu : MonoBehaviour
     [Header("Settings - On Same Panel")]
     public Slider musicSlider;
     public Slider sfxSlider;
-    public GameObject settingsGroup; // Optional: group of settings UI elements (sliders, labels)
-    public Button closeSettingsButton; // Optional: button to hide settings
+    public GameObject settingsGroup;
+    public Button closeSettingsButton;
 
     private bool isPaused = false;
-    private bool settingsVisible = false;
+    private bool settingsVisible = true;
 
     void Start()
     {
@@ -43,9 +43,9 @@ public class PauseMenu : MonoBehaviour
                 Debug.LogWarning("SettingsGroup not found inside PausePanel!");
         }
 
-        // Hide settings by default
+        // Settings visible by default
         if (settingsGroup != null)
-            settingsGroup.SetActive(false);
+            settingsGroup.SetActive(true);
 
         SetupButtons();
         SetupSettingsSliders();
@@ -88,21 +88,42 @@ public class PauseMenu : MonoBehaviour
 
     void SetupSettingsSliders()
     {
-        if (musicSlider != null && SettingsManager.Instance != null)
+        if (musicSlider != null)
         {
-            musicSlider.value = SettingsManager.Instance.musicVolume;
+            musicSlider.onValueChanged.RemoveAllListeners();
             musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+
+            if (SettingsManager.Instance != null)
+            {
+                musicSlider.value = SettingsManager.Instance.musicVolume;
+                Debug.Log($"Music slider set to: {musicSlider.value}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Music Slider is not assigned in PauseMenu!");
         }
 
-        if (sfxSlider != null && SettingsManager.Instance != null)
+        if (sfxSlider != null)
         {
-            sfxSlider.value = SettingsManager.Instance.sfxVolume;
+            sfxSlider.onValueChanged.RemoveAllListeners();
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+
+            if (SettingsManager.Instance != null)
+            {
+                sfxSlider.value = SettingsManager.Instance.sfxVolume;
+                Debug.Log($"SFX slider set to: {sfxSlider.value}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("SFX Slider is not assigned in PauseMenu!");
         }
     }
 
     void OnMusicVolumeChanged(float value)
     {
+        Debug.Log($"Music slider changed to: {value}");
         if (SettingsManager.Instance != null)
             SettingsManager.Instance.SetMusicVolume(value);
 
@@ -112,6 +133,7 @@ public class PauseMenu : MonoBehaviour
 
     void OnSFXVolumeChanged(float value)
     {
+        Debug.Log($"SFX slider changed to: {value}");
         if (SettingsManager.Instance != null)
             SettingsManager.Instance.SetSFXVolume(value);
 
@@ -123,13 +145,6 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // If settings are visible, hide them first
-            if (settingsVisible)
-            {
-                ToggleSettings();
-                return;
-            }
-
             if (isPaused)
                 ResumeGame();
             else
@@ -149,10 +164,15 @@ public class PauseMenu : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(true);
 
-        // Hide settings by default when pausing
-        if (settingsGroup != null)
-            settingsGroup.SetActive(false);
-        settingsVisible = false;
+        // Refresh slider values from SettingsManager when pausing
+        if (musicSlider != null && SettingsManager.Instance != null)
+        {
+            musicSlider.value = SettingsManager.Instance.musicVolume;
+        }
+        if (sfxSlider != null && SettingsManager.Instance != null)
+        {
+            sfxSlider.value = SettingsManager.Instance.sfxVolume;
+        }
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
@@ -170,8 +190,6 @@ public class PauseMenu : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
-        settingsVisible = false;
-
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
     }
@@ -184,17 +202,6 @@ public class PauseMenu : MonoBehaviour
         if (settingsGroup != null)
             settingsGroup.SetActive(settingsVisible);
 
-        // Show/hide main buttons when settings are shown
-        if (resumeButton != null)
-            resumeButton.gameObject.SetActive(!settingsVisible);
-        if (settingsButton != null)
-            settingsButton.gameObject.SetActive(!settingsVisible);
-        if (mainMenuButton != null)
-            mainMenuButton.gameObject.SetActive(!settingsVisible);
-        if (quitButton != null)
-            quitButton.gameObject.SetActive(!settingsVisible);
-
-        // Refresh slider values when opening
         if (settingsVisible)
         {
             if (musicSlider != null && SettingsManager.Instance != null)
@@ -205,6 +212,12 @@ public class PauseMenu : MonoBehaviour
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
+    }
+
+    // Public method to check if game is paused
+    public bool IsPaused()
+    {
+        return isPaused;
     }
 
     void GoToMainMenu()

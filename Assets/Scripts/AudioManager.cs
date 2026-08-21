@@ -13,7 +13,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Music")]
     public AudioClip menuMusic;
-    public AudioClip[] gameMusicTracks; // 3 tracks for random play in game
+    public AudioClip[] gameMusicTracks;
     public bool shuffleMusic = true;
 
     [Header("Sound Effects")]
@@ -53,7 +53,16 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        LoadSettings();
+        // Load settings from SettingsManager
+        if (SettingsManager.Instance != null)
+        {
+            musicVolume = SettingsManager.Instance.musicVolume;
+            sfxVolume = SettingsManager.Instance.sfxVolume;
+            SetMusicVolume(musicVolume);
+            SetSFXVolume(sfxVolume);
+            Debug.Log($"AudioManager Start - Music: {musicVolume}, SFX: {sfxVolume}");
+        }
+
         DetectSceneAndPlayMusic();
     }
 
@@ -66,6 +75,16 @@ public class AudioManager : MonoBehaviour
     {
         // Small delay to let scene fully load
         Invoke(nameof(DetectSceneAndPlayMusic), 0.1f);
+
+        // Re-apply settings after scene load
+        if (SettingsManager.Instance != null)
+        {
+            musicVolume = SettingsManager.Instance.musicVolume;
+            sfxVolume = SettingsManager.Instance.sfxVolume;
+            SetMusicVolume(musicVolume);
+            SetSFXVolume(sfxVolume);
+            Debug.Log($"Scene loaded - Music: {musicVolume}, SFX: {sfxVolume}");
+        }
     }
 
     void InitializeAudioSources()
@@ -93,17 +112,8 @@ public class AudioManager : MonoBehaviour
         uiSource.loop = false;
         uiSource.playOnAwake = false;
         uiSource.volume = sfxVolume;
-    }
 
-    void LoadSettings()
-    {
-        if (SettingsManager.Instance != null)
-        {
-            musicVolume = SettingsManager.Instance.musicVolume;
-            sfxVolume = SettingsManager.Instance.sfxVolume;
-            SetMusicVolume(musicVolume);
-            SetSFXVolume(sfxVolume);
-        }
+        Debug.Log("Audio sources initialized");
     }
 
     public void DetectSceneAndPlayMusic()
@@ -135,6 +145,7 @@ public class AudioManager : MonoBehaviour
 
         musicSource.clip = menuMusic;
         musicSource.loop = true;
+        musicSource.volume = musicVolume; // Apply current volume
         musicSource.Play();
         isMusicPlaying = true;
     }
@@ -192,6 +203,7 @@ public class AudioManager : MonoBehaviour
             {
                 musicSource.clip = nextTrack;
                 musicSource.loop = false;
+                musicSource.volume = musicVolume; // Apply current volume
                 musicSource.Play();
                 isMusicPlaying = true;
                 Debug.Log($"Playing game track: {nextTrack.name}");
@@ -208,18 +220,40 @@ public class AudioManager : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
-        musicVolume = volume;
+        musicVolume = Mathf.Clamp01(volume);
         if (musicSource != null)
-            musicSource.volume = volume;
+        {
+            musicSource.volume = musicVolume;
+            Debug.Log($"Music volume set to: {musicVolume}");
+        }
+        else
+        {
+            Debug.LogWarning("MusicSource is null!");
+        }
     }
 
     public void SetSFXVolume(float volume)
     {
-        sfxVolume = volume;
+        sfxVolume = Mathf.Clamp01(volume);
         if (sfxSource != null)
-            sfxSource.volume = volume;
+        {
+            sfxSource.volume = sfxVolume;
+        }
         if (uiSource != null)
-            uiSource.volume = volume;
+        {
+            uiSource.volume = sfxVolume;
+        }
+        Debug.Log($"SFX volume set to: {sfxVolume}");
+    }
+
+    public float GetMusicVolume()
+    {
+        return musicVolume;
+    }
+
+    public float GetSFXVolume()
+    {
+        return sfxVolume;
     }
 
     public void PauseAllAudio()
@@ -279,55 +313,55 @@ public class AudioManager : MonoBehaviour
     public void PlayButtonClick()
     {
         if (isPaused || buttonClickSound == null || uiSource == null) return;
-        uiSource.PlayOneShot(buttonClickSound);
+        uiSource.PlayOneShot(buttonClickSound, sfxVolume);
     }
 
     public void PlayWinSound()
     {
         if (isPaused || winSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(winSound);
+        sfxSource.PlayOneShot(winSound, sfxVolume);
     }
 
     public void PlayLoseSound()
     {
         if (isPaused || loseSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(loseSound);
+        sfxSource.PlayOneShot(loseSound, sfxVolume);
     }
 
     public void PlayPointGainSound()
     {
         if (isPaused || pointGainSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(pointGainSound);
+        sfxSource.PlayOneShot(pointGainSound, sfxVolume);
     }
 
     public void PlayPointLoseSound()
     {
         if (isPaused || pointLoseSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(pointLoseSound);
+        sfxSource.PlayOneShot(pointLoseSound, sfxVolume);
     }
 
     public void PlayCorrectCatchSound()
     {
         if (isPaused || correctCatchSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(correctCatchSound);
+        sfxSource.PlayOneShot(correctCatchSound, sfxVolume);
     }
 
     public void PlayWrongCatchSound()
     {
         if (isPaused || wrongCatchSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(wrongCatchSound);
+        sfxSource.PlayOneShot(wrongCatchSound, sfxVolume);
     }
 
     public void PlayVitaminCaughtMidAirSound()
     {
         if (isPaused || vitaminCaughtMidAirSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(vitaminCaughtMidAirSound);
+        sfxSource.PlayOneShot(vitaminCaughtMidAirSound, sfxVolume);
     }
 
     public void PlayVitaminDestroyedSound()
     {
         if (isPaused || vitaminDestroyedSound == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(vitaminDestroyedSound);
+        sfxSource.PlayOneShot(vitaminDestroyedSound, sfxVolume);
     }
 
     public void StopMusic()

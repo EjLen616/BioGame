@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1544833116489754032}
+  - component: {fileID: 9056061939278424594}
   - component: {fileID: 531301584704004658}
   m_Layer: 0
   m_Name: AudioManager
@@ -32,6 +33,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9056061939278424594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2391395926891728663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccb6324135599d64cb25c6ce18ce387b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicVolume: 0.7
+  sfxVolume: 0.7
 --- !u!114 &531301584704004658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44,8 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c98fb0c1614e9141a1dee8ec320810c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuMusicTracks:
-  - {fileID: 8300000, guid: 96f2ab253e9955d42aa5b2ebaeaf1603, type: 3}
+  menuMusic: {fileID: 8300000, guid: fd2a566f3c0c41f4e872c185b4b79226, type: 3}
   gameMusicTracks:
   - {fileID: 8300000, guid: 8bf85a68a97d2df42b1367865ff5367c, type: 3}
   - {fileID: 8300000, guid: 6817d7ed159a41146a7dea7437e55a01, type: 3}
@@ -58,3 +72,5 @@ MonoBehaviour:
   pointLoseSound: {fileID: 0}
   correctCatchSound: {fileID: 8300000, guid: 027c71f2d0923da43a01fbd3b9a5fa92, type: 3}
   wrongCatchSound: {fileID: 0}
+  vitaminCaughtMidAirSound: {fileID: 0}
+  vitaminDestroyedSound: {fileID: 0}

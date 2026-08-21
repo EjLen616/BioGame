@@ -2014,8 +2014,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7dc3297a5fde1a448b38b6fd08cc3a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
+  musicSlider: {fileID: 974025958}
+  sfxSlider: {fileID: 571228139}
   musicVolumeText: {fileID: 0}
   sfxVolumeText: {fileID: 0}
   closeButton: {fileID: 0}
@@ -4503,11 +4503,11 @@ MonoBehaviour:
   pausePanel: {fileID: 981961520}
   resumeButton: {fileID: 0}
   settingsButton: {fileID: 0}
-  mainMenuButton: {fileID: 0}
+  mainMenuButton: {fileID: 481718593}
   quitButton: {fileID: 0}
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  settingsGroup: {fileID: 0}
+  musicSlider: {fileID: 974025958}
+  sfxSlider: {fileID: 571228139}
+  settingsGroup: {fileID: 929159121}
   closeSettingsButton: {fileID: 0}
 --- !u!1 &1980361455
 GameObject:

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4bba25622b421345beb0f43b5bc636b, type: 3}
+  m_Name: Heart
+  m_EditorClassIdentifier: 
+  basketName: Heart
+  healthStages:
+  - {fileID: 3967663168066840024, guid: ea635b0d0e48e1f45bbc40369df9c2eb, type: 3}
+  - {fileID: 2011102994200541850, guid: f8ff1add7b4525f449442d212fcf620b, type: 3}
+  - {fileID: -3155432701805708366, guid: def94e707d94ef6419a2b86c9b7cee2c, type: 3}
+  - {fileID: -3885957256522985914, guid: 471710cede0f7db4d98fab0dd74f003e, type: 3}
+  - {fileID: -2453507773746595589, guid: fa7239dc5b919c14f99ef45dcf0877bb, type: 3}
+  - {fileID: 5279958143227133908, guid: 5ebbc4a86a99cf14c8591d6c0d7352a1, type: 3}
+  - {fileID: -7821033927521896881, guid: 854ebd5ca3694454787096140743d10a, type: 3}
+  stageColors: []
+  requiredVitamins:
+  - B
+  - D
+  - E
+  checkmarkPrefab: {fileID: 0}
+  redXPrefab: {fileID: 0}

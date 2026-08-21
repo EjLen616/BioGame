@@ -1,18 +1,18 @@
 using UnityEngine;
 
 [System.Serializable]
-public class ObjectType
+public class EndlessObjectType
 {
     public string typeName;
     public Sprite sprite;
     public Color color = Color.white;
     public int pointValue = 10;
-    public string[] acceptedBaskets;
 }
 
-public class FallingObject : MonoBehaviour
+public class EndlessFallingObject : MonoBehaviour
 {
-    public ObjectType objectType;
+    public EndlessObjectType objectType;
+    public string vitaminType; // "A", "B", "C", etc.
 
     [Header("Movement Settings")]
     public float baseFallSpeed = 3f;
@@ -26,14 +26,12 @@ public class FallingObject : MonoBehaviour
     public float speedIncreaseAmount = 0.5f;
     public float maxFallSpeed = 10f;
 
-    [Header("References")]
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Collider2D col;
     private Color originalColor;
 
     private bool isBeingDragged = false;
-    private Vector3 startPosition;
     private float initialY;
     private float nextSpeedIncreaseTime;
     private bool hasBeenMissed = false;
@@ -44,6 +42,17 @@ public class FallingObject : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+
+        // Make sure collider is set as trigger for detection
+        if (col != null)
+        {
+            col.isTrigger = true;
+            Debug.Log($"Vitamin {gameObject.name} collider set as trigger");
+        }
+        else
+        {
+            Debug.LogError($"Vitamin {gameObject.name} has no Collider2D!");
+        }
     }
 
     void Start()
@@ -52,8 +61,6 @@ public class FallingObject : MonoBehaviour
         initialY = transform.position.y;
         currentFallSpeed = baseFallSpeed;
         nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
-        hasBeenMissed = false;
-        isBeingDestroyed = false;
 
         if (spriteRenderer != null)
         {
@@ -63,14 +70,11 @@ public class FallingObject : MonoBehaviour
 
     void InitializeObject()
     {
-        if (objectType != null)
+        if (objectType != null && spriteRenderer != null)
         {
-            if (spriteRenderer != null && objectType.sprite != null)
-            {
-                spriteRenderer.sprite = objectType.sprite;
-                spriteRenderer.color = objectType.color;
-                originalColor = objectType.color;
-            }
+            spriteRenderer.sprite = objectType.sprite;
+            spriteRenderer.color = objectType.color;
+            originalColor = objectType.color;
         }
 
         if (rb != null)
@@ -81,37 +85,27 @@ public class FallingObject : MonoBehaviour
 
     void Update()
     {
-        // Check if game is paused - if so, don't move
-        if (IsGamePaused())
-            return;
+        if (IsGamePaused() || isBeingDragged) return;
 
-        if (!isBeingDragged)
+        UpdateFallSpeed();
+        transform.position += Vector3.down * currentFallSpeed * Time.deltaTime;
+        transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
+
+        float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
+        transform.position += new Vector3(wiggle, 0, 0);
+
+        if (transform.position.y < -10f)
         {
-            UpdateFallSpeed();
-
-            transform.position += Vector3.down * currentFallSpeed * Time.deltaTime;
-            transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
-
-            float wiggle = Mathf.Sin(Time.time * wiggleSpeed + initialY) * wiggleAmount * Time.deltaTime;
-            transform.position += new Vector3(wiggle, 0, 0);
-
-            if (transform.position.y < -10f)
-            {
-                HandleObjectMissed();
-            }
+            HandleObjectMissed();
         }
     }
 
     bool IsGamePaused()
     {
-        // Check if time scale is 0 (paused)
-        if (Time.timeScale == 0f)
-            return true;
+        if (Time.timeScale == 0f) return true;
 
-        // Check if pause menu is active
         PauseMenu pauseMenu = FindFirstObjectByType<PauseMenu>();
-        if (pauseMenu != null && pauseMenu.IsPaused())
-            return true;
+        if (pauseMenu != null && pauseMenu.IsPaused()) return true;
 
         return false;
     }
@@ -123,14 +117,10 @@ public class FallingObject : MonoBehaviour
         isBeingDestroyed = true;
 
         if (AudioManager.Instance != null)
-        {
             AudioManager.Instance.PlayVitaminDestroyedSound();
-        }
 
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.ObjectMissed();
-        }
+        if (EndlessGameManager.Instance != null)
+            EndlessGameManager.Instance.ObjectMissed();
 
         Destroy(gameObject);
     }
@@ -141,18 +131,15 @@ public class FallingObject : MonoBehaviour
         {
             currentFallSpeed = Mathf.Min(currentFallSpeed + speedIncreaseAmount, maxFallSpeed);
             nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
-            Debug.Log($"Speed increased to {currentFallSpeed}");
         }
     }
 
     void OnMouseDown()
     {
-        // Don't allow dragging if game is paused
-        if (IsGamePaused() || Time.timeScale == 0f)
-            return;
+        Debug.Log($"Vitamin {vitaminType} clicked!");
+        if (IsGamePaused() || Time.timeScale == 0f) return;
 
         isBeingDragged = true;
-        startPosition = transform.position;
 
         if (rb != null)
         {
@@ -164,16 +151,12 @@ public class FallingObject : MonoBehaviour
             spriteRenderer.sortingOrder = 10;
 
         if (AudioManager.Instance != null)
-        {
             AudioManager.Instance.PlayVitaminCaughtMidAirSound();
-        }
     }
 
     void OnMouseDrag()
     {
-        // Don't allow dragging if game is paused
-        if (IsGamePaused() || Time.timeScale == 0f)
-            return;
+        if (IsGamePaused() || Time.timeScale == 0f) return;
 
         if (isBeingDragged)
         {
@@ -185,9 +168,8 @@ public class FallingObject : MonoBehaviour
 
     void OnMouseUp()
     {
-        // Don't allow dropping if game is paused
-        if (IsGamePaused() || Time.timeScale == 0f)
-            return;
+        Debug.Log($"Vitamin {vitaminType} released!");
+        if (IsGamePaused() || Time.timeScale == 0f) return;
 
         if (isBeingDragged)
         {
@@ -196,34 +178,39 @@ public class FallingObject : MonoBehaviour
             if (spriteRenderer != null)
                 spriteRenderer.sortingOrder = 0;
 
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+            // Check if dropped on a basket using a larger radius
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1.5f);
+            Debug.Log($"Found {colliders.Length} colliders near drop position");
 
-            bool caughtByBasket = false;
             foreach (Collider2D collider in colliders)
             {
-                Basket basket = collider.GetComponent<Basket>();
+                Debug.Log($"Collider found: {collider.gameObject.name} with tag {collider.gameObject.tag}");
+
+                EndlessBasket basket = collider.GetComponent<EndlessBasket>();
                 if (basket != null)
                 {
+                    Debug.Log($"Dropped on basket: {basket.BasketName}");
                     basket.HandleObjectCaught(this);
-                    caughtByBasket = true;
-                    break;
+                    return;
                 }
             }
 
-            if (!caughtByBasket)
+            Debug.Log($"Vitamin {vitaminType} not caught by any basket");
+
+            // If not caught, resume falling
+            if (rb != null)
             {
-                if (rb != null)
-                {
-                    rb.gravityScale = 0f;
-                }
+                rb.gravityScale = 0f;
             }
         }
     }
 
-    public void SetObjectType(ObjectType type)
+    public void SetObjectType(EndlessObjectType type, string vitamin)
     {
         objectType = type;
+        vitaminType = vitamin;
         InitializeObject();
+        Debug.Log($"Vitamin set: {type.typeName} with type {vitamin}");
     }
 
     public void ResetFallSpeed()
@@ -248,7 +235,7 @@ public class FallingObject : MonoBehaviour
             }
         }
 
-        ObjectSpawner spawner = FindFirstObjectByType<ObjectSpawner>();
+        EndlessObjectSpawner spawner = FindFirstObjectByType<EndlessObjectSpawner>();
         if (spawner != null)
         {
             spawner.ObjectDestroyed();
