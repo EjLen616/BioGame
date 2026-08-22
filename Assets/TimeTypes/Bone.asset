@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e5a87f59195ca469b36ff4324aafce, type: 3}
+  m_Name: Bone
+  m_EditorClassIdentifier: 
+  basketName: Bone
+  healthStages:
+  - {fileID: 2217521879264586750, guid: e61948ba6b00cdf408d9a83c6b445d7b, type: 3}
+  - {fileID: -3151503489893355058, guid: 3befc719c82a81f4f93b2f1585f3f621, type: 3}
+  - {fileID: -9080459899094382964, guid: 5f2cfee56b7b7dc48b60ce56abad6d47, type: 3}
+  - {fileID: 2900966911979215706, guid: 13bf18cf824078a4a8dac63dbbe6471d, type: 3}
+  - {fileID: -7427634156536945224, guid: 11b37b705e6c9644792e86fb3a18e9b5, type: 3}
+  - {fileID: -3443147423918103597, guid: 9ad718086d68bee489724b6cb40c78f1, type: 3}
+  - {fileID: -8082650579942943322, guid: 78935296bcb9cdb42933943553ba01d8, type: 3}
+  stageColors: []
+  requiredVitamins:
+  - A
+  - D
+  - K
+  checkmarkPrefab: {fileID: 0}
+  redXPrefab: {fileID: 0}

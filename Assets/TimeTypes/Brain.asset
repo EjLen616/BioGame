@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e5a87f59195ca469b36ff4324aafce, type: 3}
+  m_Name: Brain
+  m_EditorClassIdentifier: 
+  basketName: Brain
+  healthStages:
+  - {fileID: -5585496169915905870, guid: 9748ed5428980c04992f89027d1c3516, type: 3}
+  - {fileID: -4110002318273970672, guid: 9bcfe1dffc81796449a94bc562c6afe7, type: 3}
+  - {fileID: -6972672191302429518, guid: 9166f37ddfcf60c40ba061146b1aba53, type: 3}
+  - {fileID: -1872114887013713475, guid: 9adfac88bd45ba24497ac51890013c02, type: 3}
+  - {fileID: -2356208800839237605, guid: 27bf0337b92bf6c4f8c726f2fb7ac921, type: 3}
+  - {fileID: -7206152078121229559, guid: a5c6f66ff94e2ab4997d1fb1d3542385, type: 3}
+  - {fileID: 5336493752270808784, guid: 832d6508c94799a468e433e078d3831d, type: 3}
+  stageColors: []
+  requiredVitamins:
+  - B
+  - D
+  checkmarkPrefab: {fileID: 0}
+  redXPrefab: {fileID: 0}

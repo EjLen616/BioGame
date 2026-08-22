@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e5a87f59195ca469b36ff4324aafce, type: 3}
+  m_Name: Blood
+  m_EditorClassIdentifier: 
+  basketName: Blood
+  healthStages:
+  - {fileID: 7898931071375465938, guid: fc9250e68148cbc4c82701c74237680e, type: 3}
+  - {fileID: -5740631605519215363, guid: 85aaf642741b22d428932c8ba53f3a2e, type: 3}
+  - {fileID: 1810579331314150161, guid: 892f87d825881b244aefa2e148b4ff8f, type: 3}
+  - {fileID: -8952020417303367027, guid: 977b5ad02602d834bbfc12affbf69ad8, type: 3}
+  - {fileID: 2671065720520442114, guid: fc1edcd05934ad54b8893efb2ba3339f, type: 3}
+  - {fileID: -1939320586862339292, guid: 904499c9e1f9ea944a7156651dd58dbb, type: 3}
+  - {fileID: -7123349087383122507, guid: 11dfa6f231454344b83e7a22f848ffbb, type: 3}
+  stageColors: []
+  requiredVitamins:
+  - K
+  checkmarkPrefab: {fileID: 0}
+  redXPrefab: {fileID: 0}

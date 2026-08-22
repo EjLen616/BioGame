@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e5a87f59195ca469b36ff4324aafce, type: 3}
+  m_Name: Eye
+  m_EditorClassIdentifier: 
+  basketName: Eye
+  healthStages:
+  - {fileID: -4251945329011721049, guid: ff5377c4d0e3e4543a3aa3a0e5febe5c, type: 3}
+  - {fileID: 5619028724753090932, guid: 18decce6a3b95764c98d54ab2eb3d82e, type: 3}
+  - {fileID: -7404578842336138647, guid: 4eabeb0101e048548a2a5eb4fa53c264, type: 3}
+  - {fileID: -1596966247144907461, guid: 3b2225bc8c0e6554dbd16ca9ad8a2ade, type: 3}
+  - {fileID: 1223419074161838648, guid: e56f51591b072c1408728ace35830fcd, type: 3}
+  - {fileID: -8426786404750522227, guid: c70f5679e68146d4e83850a51c5c62ae, type: 3}
+  - {fileID: 2469017502162092336, guid: fe604433ada45f848a75d83ed76b2f03, type: 3}
+  stageColors: []
+  requiredVitamins:
+  - A
+  checkmarkPrefab: {fileID: 0}
+  redXPrefab: {fileID: 0}
