@@ -13,6 +13,8 @@ public class EndlessFallingObject : MonoBehaviour
 {
     public EndlessObjectType objectType;
     public string vitaminType; // "A", "B", "C", etc.
+    public bool isVirus = false; // NEW: Flag to identify virus
+    public int virusPenalty = -50; // NEW: Points lost when virus is clicked
 
     [Header("Movement Settings")]
     public float baseFallSpeed = 3f;
@@ -36,6 +38,7 @@ public class EndlessFallingObject : MonoBehaviour
     private float nextSpeedIncreaseTime;
     private bool hasBeenMissed = false;
     private bool isBeingDestroyed = false;
+    private bool isBeingClicked = false; // NEW: Prevent double virus penalty
 
     void Awake()
     {
@@ -43,15 +46,9 @@ public class EndlessFallingObject : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
 
-        // Make sure collider is set as trigger for detection
         if (col != null)
         {
             col.isTrigger = true;
-            Debug.Log($"Vitamin {gameObject.name} collider set as trigger");
-        }
-        else
-        {
-            Debug.LogError($"Vitamin {gameObject.name} has no Collider2D!");
         }
     }
 
@@ -65,6 +62,23 @@ public class EndlessFallingObject : MonoBehaviour
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
+        }
+
+        // Add pulsing effect for virus
+        if (isVirus)
+        {
+            InvokeRepeating(nameof(PulseVirus), 0f, 0.5f);
+        }
+    }
+
+    void PulseVirus()
+    {
+        if (spriteRenderer != null && isVirus)
+        {
+            // Quick flash effect to make virus stand out
+            Color currentColor = spriteRenderer.color;
+            float alpha = Mathf.PingPong(Time.time * 2f, 0.3f) + 0.7f;
+            spriteRenderer.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
         }
     }
 
@@ -116,11 +130,19 @@ public class EndlessFallingObject : MonoBehaviour
         hasBeenMissed = true;
         isBeingDestroyed = true;
 
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlayVitaminDestroyedSound();
+        // Viruses don't lose points when missed
+        if (!isVirus)
+        {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayVitaminDestroyedSound();
 
-        if (EndlessGameManager.Instance != null)
-            EndlessGameManager.Instance.ObjectMissed();
+            if (EndlessGameManager.Instance != null)
+                EndlessGameManager.Instance.ObjectMissed();
+        }
+        else
+        {
+            Debug.Log("Virus missed - no penalty");
+        }
 
         Destroy(gameObject);
     }
@@ -136,9 +158,21 @@ public class EndlessFallingObject : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log($"Vitamin {vitaminType} clicked!");
+        Debug.Log($"{(isVirus ? "Virus" : "Vitamin")} clicked!");
         if (IsGamePaused() || Time.timeScale == 0f) return;
 
+        // Virus handling - instant penalty, no dragging
+        if (isVirus)
+        {
+            if (!isBeingClicked)
+            {
+                isBeingClicked = true;
+                HandleVirusClicked();
+            }
+            return;
+        }
+
+        // Normal vitamin handling
         isBeingDragged = true;
 
         if (rb != null)
@@ -154,9 +188,29 @@ public class EndlessFallingObject : MonoBehaviour
             AudioManager.Instance.PlayVitaminCaughtMidAirSound();
     }
 
+    void HandleVirusClicked()
+    {
+        Debug.Log($"VIRUS CLICKED! Penalty: {virusPenalty} points");
+
+        // Apply penalty
+        if (EndlessGameManager.Instance != null)
+        {
+            EndlessGameManager.Instance.AddScore(virusPenalty);
+        }
+
+        // Play sound
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayWrongCatchSound();
+
+        // Destroy virus
+        isBeingDestroyed = true;
+        Destroy(gameObject);
+    }
+
     void OnMouseDrag()
     {
         if (IsGamePaused() || Time.timeScale == 0f) return;
+        if (isVirus) return; // Viruses can't be dragged
 
         if (isBeingDragged)
         {
@@ -168,8 +222,8 @@ public class EndlessFallingObject : MonoBehaviour
 
     void OnMouseUp()
     {
-        Debug.Log($"Vitamin {vitaminType} released!");
         if (IsGamePaused() || Time.timeScale == 0f) return;
+        if (isVirus) return; // Viruses can't be dragged
 
         if (isBeingDragged)
         {
@@ -178,24 +232,18 @@ public class EndlessFallingObject : MonoBehaviour
             if (spriteRenderer != null)
                 spriteRenderer.sortingOrder = 0;
 
-            // Check if dropped on a basket using a larger radius
+            // Check if dropped on a basket
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1.5f);
-            Debug.Log($"Found {colliders.Length} colliders near drop position");
 
             foreach (Collider2D collider in colliders)
             {
-                Debug.Log($"Collider found: {collider.gameObject.name} with tag {collider.gameObject.tag}");
-
                 EndlessBasket basket = collider.GetComponent<EndlessBasket>();
                 if (basket != null)
                 {
-                    Debug.Log($"Dropped on basket: {basket.BasketName}");
                     basket.HandleObjectCaught(this);
                     return;
                 }
             }
-
-            Debug.Log($"Vitamin {vitaminType} not caught by any basket");
 
             // If not caught, resume falling
             if (rb != null)
@@ -209,8 +257,27 @@ public class EndlessFallingObject : MonoBehaviour
     {
         objectType = type;
         vitaminType = vitamin;
+        isVirus = false;
         InitializeObject();
         Debug.Log($"Vitamin set: {type.typeName} with type {vitamin}");
+    }
+
+    public void SetAsVirus(EndlessObjectType type, int penalty)
+    {
+        objectType = type;
+        vitaminType = "VIRUS";
+        isVirus = true;
+        virusPenalty = penalty;
+        InitializeObject();
+
+        // Make virus stand out - red tint
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = new Color(1f, 0.2f, 0.2f, 1f);
+            originalColor = spriteRenderer.color;
+        }
+
+        Debug.Log($"Virus set with penalty: {penalty}");
     }
 
     public void ResetFallSpeed()
@@ -218,7 +285,7 @@ public class EndlessFallingObject : MonoBehaviour
         currentFallSpeed = baseFallSpeed;
         nextSpeedIncreaseTime = Time.time + speedIncreaseInterval;
 
-        if (spriteRenderer != null && objectType != null)
+        if (spriteRenderer != null && objectType != null && !isVirus)
         {
             spriteRenderer.color = originalColor;
         }
@@ -229,7 +296,7 @@ public class EndlessFallingObject : MonoBehaviour
         if (!isBeingDestroyed)
         {
             isBeingDestroyed = true;
-            if (AudioManager.Instance != null && !hasBeenMissed)
+            if (AudioManager.Instance != null && !hasBeenMissed && !isVirus)
             {
                 AudioManager.Instance.PlayVitaminDestroyedSound();
             }

@@ -15,8 +15,6 @@ public class EndlessBasket : MonoBehaviour
     private int currentHealthStage = 0;
     private bool isCompleted = false;
     private bool isFailed = false;
-
-    // FIXED: Store the desired scale once and never change it
     private Vector3 fixedScale = Vector3.one;
     private GameObject checkmarkInstance;
     private GameObject redXInstance;
@@ -25,10 +23,7 @@ public class EndlessBasket : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         basketCollider = GetComponent<Collider2D>();
-
-        // Store the scale once at start and never change it
         fixedScale = transform.localScale;
-        Debug.Log($"Basket {gameObject.name} fixed scale set to: {fixedScale}");
 
         if (basketCollider != null)
         {
@@ -42,7 +37,6 @@ public class EndlessBasket : MonoBehaviour
         {
             basketCollider.isTrigger = true;
         }
-        // Apply fixed scale
         transform.localScale = fixedScale;
     }
 
@@ -58,10 +52,7 @@ public class EndlessBasket : MonoBehaviour
         currentHealthStage = 0;
         isCompleted = false;
         isFailed = false;
-
-        // Reset scale to fixed size
         transform.localScale = fixedScale;
-
         UpdateAppearance();
         RemoveAllIndicators();
 
@@ -70,11 +61,19 @@ public class EndlessBasket : MonoBehaviour
             basketCollider.isTrigger = true;
         }
 
-        Debug.Log($"Initialized basket: {BasketName} with fixed scale: {fixedScale}");
+        Debug.Log($"Initialized basket: {BasketName}");
     }
 
     public void HandleObjectCaught(EndlessFallingObject fallingObject)
     {
+        // NEW: Ignore viruses - they can't be caught by baskets
+        if (fallingObject.isVirus)
+        {
+            Debug.Log($"Virus cannot be caught by basket! Destroying.");
+            Destroy(fallingObject.gameObject);
+            return;
+        }
+
         if (isCompleted || isFailed)
         {
             Destroy(fallingObject.gameObject);
@@ -166,16 +165,13 @@ public class EndlessBasket : MonoBehaviour
         int index = currentHealthStage + 3;
         index = Mathf.Clamp(index, 0, basketType.healthStages.Length - 1);
 
-        // Change the sprite
         spriteRenderer.sprite = basketType.healthStages[index];
 
-        // Apply color if available
         if (basketType.stageColors != null && index < basketType.stageColors.Length)
         {
             spriteRenderer.color = basketType.stageColors[index];
         }
 
-        // IMPORTANT: Always reset scale to fixed size after changing sprite
         transform.localScale = fixedScale;
     }
 

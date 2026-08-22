@@ -651,6 +651,7 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: A
     spawnWeight: 1
+    isVirus: 0
   - objectType:
       typeName: B
       sprite: {fileID: 5495286639668717122, guid: fcd503b7054c11e4fbce9beaa63d96cd, type: 3}
@@ -658,6 +659,7 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: B
     spawnWeight: 1
+    isVirus: 0
   - objectType:
       typeName: C
       sprite: {fileID: 4570411013861218554, guid: 99c9c33dadb566847b9f2a474c5b8209, type: 3}
@@ -665,6 +667,7 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: C
     spawnWeight: 1
+    isVirus: 0
   - objectType:
       typeName: D
       sprite: {fileID: 1536689892586116029, guid: 70ade210d08cc2847ac57d2cb550def3, type: 3}
@@ -672,6 +675,7 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: D
     spawnWeight: 1
+    isVirus: 0
   - objectType:
       typeName: E
       sprite: {fileID: -6365667155851698992, guid: a696d7fa8f70b4f4389ee099a7258b8b, type: 3}
@@ -679,6 +683,7 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: E
     spawnWeight: 1
+    isVirus: 0
   - objectType:
       typeName: K
       sprite: {fileID: -8713735636540599520, guid: 7c937026d99b00549852a59923086d74, type: 3}
@@ -686,7 +691,25 @@ MonoBehaviour:
       pointValue: 10
     vitaminType: K
     spawnWeight: 1
+    isVirus: 0
+  - objectType:
+      typeName: Virus
+      sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+      color: {r: 0, g: 0, b: 0, a: 1}
+      pointValue: 0
+    vitaminType: Virus
+    spawnWeight: 1
+    isVirus: 1
   fallingObjectPrefab: {fileID: 3855544694363145059, guid: 54b9d29a6811f93448df830e5f6ac3ef, type: 3}
+  virusObjectType:
+    typeName: Virus
+    sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+    color: {r: 0, g: 0, b: 0, a: 1}
+    pointValue: 10
+  virusPrefab: {fileID: 3855544694363145059, guid: 8e74f93ba4a183544a642073c4c7f170, type: 3}
+  virusSpawnIntervalMin: 10
+  virusSpawnIntervalMax: 20
+  virusPointPenalty: -50
   initialSpawnRate: 1
   spawnRateIncrease: 0
   minSpawnRate: 0.3
@@ -2204,6 +2227,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5176356a3fc83694dafbefdc2b53da32, type: 2}
   - {fileID: 11400000, guid: 318a60a6ed0b9d14ebf5662d6aa6a88a, type: 2}
   - {fileID: 11400000, guid: 35e1c6f9729078c46869e711f3ec4e0a, type: 2}
+  - {fileID: 11400000, guid: c42d675effb1413468a8592e0b0d5483, type: 2}
   objectSpawner: {fileID: 491409771}
 --- !u!1 &1440429815
 GameObject:

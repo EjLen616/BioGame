@@ -11,11 +11,19 @@ public class EndlessObjectSpawner : MonoBehaviour
         public EndlessObjectType objectType;
         public string vitaminType; // A, B, C, D, E, K
         public float spawnWeight = 1f;
+        public bool isVirus = false; // NEW: Flag to identify virus
     }
 
     [Header("Spawn Settings")]
     public List<SpawnSettings> allObjectTypes = new List<SpawnSettings>();
     public GameObject fallingObjectPrefab;
+
+    [Header("Virus Settings")]
+    public EndlessObjectType virusObjectType; // NEW: Virus type data
+    public GameObject virusPrefab; // NEW: Separate prefab for virus
+    public float virusSpawnIntervalMin = 10f; // Minimum seconds between virus spawns
+    public float virusSpawnIntervalMax = 20f; // Maximum seconds between virus spawns
+    public int virusPointPenalty = -50; // Points lost when virus is clicked
 
     [Header("Spawn Parameters")]
     public float initialSpawnRate = 1f;
@@ -36,6 +44,7 @@ public class EndlessObjectSpawner : MonoBehaviour
     private List<string> allowedVitaminTypes = new List<string>();
     private float currentSpawnRate;
     private float nextSpawnTime = 0f;
+    private float nextVirusSpawnTime = 0f;
     private int currentObjectsCount = 0;
 
     void Awake()
@@ -54,11 +63,28 @@ public class EndlessObjectSpawner : MonoBehaviour
     {
         currentSpawnRate = initialSpawnRate;
         nextSpawnTime = Time.time + currentSpawnRate;
+        ScheduleNextVirus();
+
         Debug.Log($"EndlessObjectSpawner started with {allObjectTypes.Count} vitamin types");
+    }
+
+    void ScheduleNextVirus()
+    {
+        float interval = Random.Range(virusSpawnIntervalMin, virusSpawnIntervalMax);
+        nextVirusSpawnTime = Time.time + interval;
+        Debug.Log($"Next virus scheduled in {interval} seconds");
     }
 
     void Update()
     {
+        // Check for virus spawn (only if virus prefab is assigned)
+        if (virusPrefab != null && Time.time >= nextVirusSpawnTime && currentObjectsCount < maxObjectsOnScreen)
+        {
+            SpawnVirus();
+            ScheduleNextVirus();
+        }
+
+        // Check for vitamin spawn
         if (Time.time >= nextSpawnTime && currentObjectsCount < maxObjectsOnScreen && allowedVitaminTypes.Count > 0)
         {
             SpawnObject();
@@ -67,10 +93,34 @@ public class EndlessObjectSpawner : MonoBehaviour
         }
     }
 
-    public void SetAllowedVitamins(List<string> vitamins)
+    void SpawnVirus()
     {
-        allowedVitaminTypes = vitamins;
-        Debug.Log($"Allowed vitamins updated: {string.Join(", ", allowedVitaminTypes)}");
+        if (virusPrefab == null)
+        {
+            Debug.LogWarning("Virus prefab not assigned!");
+            return;
+        }
+
+        float spawnX = Random.Range(-spawnWidth / 2f, spawnWidth / 2f);
+        Vector3 spawnPosition = new Vector3(spawnX, spawnYPosition, 0);
+
+        GameObject newVirus = Instantiate(virusPrefab, spawnPosition, Quaternion.identity);
+
+        EndlessFallingObject fallingObject = newVirus.GetComponent<EndlessFallingObject>();
+        if (fallingObject != null)
+        {
+            // Set as virus
+            fallingObject.SetAsVirus(virusObjectType, virusPointPenalty);
+            fallingObject.baseFallSpeed = baseFallSpeed * 0.8f; // Virus falls slightly slower
+            fallingObject.speedIncreaseInterval = speedIncreaseInterval;
+            fallingObject.speedIncreaseAmount = speedIncreaseAmount;
+            fallingObject.maxFallSpeed = maxFallSpeed;
+            fallingObject.ResetFallSpeed();
+
+            Debug.Log($"Virus spawned at {spawnPosition}");
+        }
+
+        currentObjectsCount++;
     }
 
     void SpawnObject()
@@ -81,11 +131,11 @@ public class EndlessObjectSpawner : MonoBehaviour
             return;
         }
 
-        // Get all spawnable types that are currently allowed
+        // Get all spawnable types that are currently allowed (excluding viruses)
         List<SpawnSettings> availableTypes = new List<SpawnSettings>();
         foreach (var setting in allObjectTypes)
         {
-            if (allowedVitaminTypes.Contains(setting.vitaminType))
+            if (!setting.isVirus && allowedVitaminTypes.Contains(setting.vitaminType))
             {
                 availableTypes.Add(setting);
             }
@@ -141,6 +191,12 @@ public class EndlessObjectSpawner : MonoBehaviour
         currentObjectsCount++;
     }
 
+    public void SetAllowedVitamins(List<string> vitamins)
+    {
+        allowedVitaminTypes = vitamins;
+        Debug.Log($"Allowed vitamins updated: {string.Join(", ", allowedVitaminTypes)}");
+    }
+
     public void ObjectDestroyed()
     {
         currentObjectsCount = Mathf.Max(0, currentObjectsCount - 1);
@@ -152,7 +208,8 @@ public class EndlessObjectSpawner : MonoBehaviour
         {
             objectType = type,
             vitaminType = vitaminType,
-            spawnWeight = weight
+            spawnWeight = weight,
+            isVirus = false
         };
         allObjectTypes.Add(newSetting);
         Debug.Log($"Added vitamin type: {vitaminType} ({type.typeName}) with weight: {weight}");
