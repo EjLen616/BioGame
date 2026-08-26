@@ -2742,7 +2742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLevel: 2
-  totalLevels: 30
+  totalLevels: 36
   mainMenuSceneName: MainMenu
   levelPrefix: Level
 --- !u!4 &1240784470
