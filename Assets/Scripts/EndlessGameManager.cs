@@ -13,12 +13,12 @@ public class EndlessGameManager : MonoBehaviour
     // UI references
     public GameObject losePanel;
     public Text scoreText;
-    public Text bestScoreText; // NEW: Best score display
+    public Text bestScoreText;
 
     // Score tracking
     private int score = 0;
     private int bestScore = 0;
-    private string bestScoreKey = "EndlessBestScore"; // Save key
+    private string bestScoreKey = "EndlessBestScore";
 
     // Cache baskets for performance
     private EndlessBasket[] baskets;
@@ -29,7 +29,12 @@ public class EndlessGameManager : MonoBehaviour
     public int pointsForMissedObject = -5;
 
     [Header("Lose Conditions")]
-    public int scoreLoseThreshold = -100; // Score at which you lose
+    public int scoreLoseThreshold = -100;
+
+    // NEW: Button references for lose panel
+    [Header("Lose Panel Buttons")]
+    public Button retryButton;
+    public Button menuButton;
 
     void Awake()
     {
@@ -50,10 +55,35 @@ public class EndlessGameManager : MonoBehaviour
         LoadBestScore();
         UpdateUI();
 
-        // Force game music to play
+        // Setup lose panel buttons
+        SetupLosePanelButtons();
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayGameMusic();
+        }
+    }
+
+    void SetupLosePanelButtons()
+    {
+        if (retryButton != null)
+        {
+            retryButton.onClick.RemoveAllListeners();
+            retryButton.onClick.AddListener(RestartGame);
+        }
+        else
+        {
+            Debug.LogWarning("Retry button not assigned in EndlessGameManager!");
+        }
+
+        if (menuButton != null)
+        {
+            menuButton.onClick.RemoveAllListeners();
+            menuButton.onClick.AddListener(GoToMainMenu);
+        }
+        else
+        {
+            Debug.LogWarning("Menu button not assigned in EndlessGameManager!");
         }
     }
 
@@ -68,7 +98,6 @@ public class EndlessGameManager : MonoBehaviour
 
     public void UpdateBasketHealth(int basketIndex, int healthStage)
     {
-        // Refresh basket cache if needed
         if (baskets == null || baskets.Length == 0)
         {
             FindAllBaskets();
@@ -76,9 +105,7 @@ public class EndlessGameManager : MonoBehaviour
 
         if (baskets.Length == 0) return;
 
-        // Check lose conditions
         CheckLoseCondition();
-
         UpdateUI();
     }
 
@@ -92,7 +119,6 @@ public class EndlessGameManager : MonoBehaviour
             if (baskets == null || baskets.Length == 0) return;
         }
 
-        // Count how many baskets are at worst health (red X)
         int worstBaskets = 0;
         foreach (EndlessBasket basket in baskets)
         {
@@ -102,7 +128,6 @@ public class EndlessGameManager : MonoBehaviour
             }
         }
 
-        // Check if any basket is at worst health AND another is at max health
         bool hasHealthy = false;
         bool hasWorst = false;
 
@@ -117,21 +142,18 @@ public class EndlessGameManager : MonoBehaviour
             }
         }
 
-        // Lose condition 1: Two worst baskets (red X)
         if (worstBaskets >= 2)
         {
             LoseGame();
             return;
         }
 
-        // Lose condition 2: One healthy (green) AND one worst (red X)
         if (hasHealthy && hasWorst)
         {
             LoseGame();
             return;
         }
 
-        // Lose condition 3: Score drops to threshold or below
         if (score <= scoreLoseThreshold)
         {
             LoseGame();
@@ -143,14 +165,12 @@ public class EndlessGameManager : MonoBehaviour
     {
         score += points;
 
-        // Update best score if current score is higher
         if (score > bestScore)
         {
             bestScore = score;
             SaveBestScore();
         }
 
-        // Check lose condition immediately after score change
         if (score <= scoreLoseThreshold && CurrentState == GameState.Playing)
         {
             LoseGame();
@@ -161,10 +181,8 @@ public class EndlessGameManager : MonoBehaviour
 
     public void ObjectMissed()
     {
-        // Apply penalty for missed object
         AddScore(pointsForMissedObject);
 
-        // Play point lose sound
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPointLoseSound();
 
@@ -199,7 +217,6 @@ public class EndlessGameManager : MonoBehaviour
 
         CurrentState = GameState.Lose;
 
-        // Play lose sound
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayLoseSound();
 
@@ -209,37 +226,29 @@ public class EndlessGameManager : MonoBehaviour
             Time.timeScale = 0f;
         }
 
-        // Determine lose reason for debugging
-        string reason = "";
-
-        // Count baskets
-        int worstBaskets = 0;
-        int healthyBaskets = 0;
-        foreach (EndlessBasket basket in baskets)
-        {
-            if (basket != null)
-            {
-                if (basket.CurrentHealthStage >= 3)
-                    healthyBaskets++;
-                if (basket.CurrentHealthStage <= -3)
-                    worstBaskets++;
-            }
-        }
-
-        if (score <= scoreLoseThreshold)
-            reason = $"Score reached {score} (below {scoreLoseThreshold})";
-        else if (worstBaskets >= 2)
-            reason = "Two body parts at worst health";
-        else if (healthyBaskets >= 1 && worstBaskets >= 1)
-            reason = "One healthy and one worst body part";
-
-        Debug.Log($"Game Over! {reason}");
+        Debug.Log("Game Over!");
     }
 
+    // NEW: Retry method
     public void RestartGame()
     {
+        Debug.Log("Restarting game...");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    // NEW: Go to Main Menu method
+    public void GoToMainMenu()
+    {
+        Debug.Log("Going to Main Menu...");
+        Time.timeScale = 1f;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayButtonClick();
+        }
+
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()

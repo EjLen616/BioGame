@@ -298,7 +298,7 @@ Transform:
   m_GameObject: {fileID: 304685466}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.18, y: -1.11, z: -0.029257448}
+  m_LocalPosition: {x: 5.2, y: -2.2, z: -0.029257448}
   m_LocalScale: {x: 1, y: 2.21, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -416,7 +416,7 @@ Transform:
   m_GameObject: {fileID: 457818986}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.42, y: -2.21, z: -0.029257448}
+  m_LocalPosition: {x: -5.2, y: -2.2, z: -0.029257448}
   m_LocalScale: {x: 1, y: 1.94, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -694,8 +694,8 @@ MonoBehaviour:
     isVirus: 0
   - objectType:
       typeName: Virus
-      sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-      color: {r: 0, g: 0, b: 0, a: 1}
+      sprite: {fileID: -8625906013721215279, guid: 653a5df71fdc9fe4a8d005eba4cb22fc, type: 3}
+      color: {r: 1, g: 1, b: 1, a: 1}
       pointValue: 0
     vitaminType: Virus
     spawnWeight: 1
@@ -703,8 +703,8 @@ MonoBehaviour:
   fallingObjectPrefab: {fileID: 3855544694363145059, guid: 54b9d29a6811f93448df830e5f6ac3ef, type: 3}
   virusObjectType:
     typeName: Virus
-    sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 1}
+    sprite: {fileID: -8625906013721215279, guid: 653a5df71fdc9fe4a8d005eba4cb22fc, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
     pointValue: 10
   virusPrefab: {fileID: 3855544694363145059, guid: 8e74f93ba4a183544a642073c4c7f170, type: 3}
   virusSpawnIntervalMin: 10
@@ -2677,6 +2677,8 @@ MonoBehaviour:
   pointsForWrongCatch: -10
   pointsForMissedObject: -5
   scoreLoseThreshold: -100
+  retryButton: {fileID: 1211562310}
+  menuButton: {fileID: 1991358947}
 --- !u!1 &1920460292
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: e990a5e8bdc4a7d4e9458c646c482a57
+  - enabled: 1
     path: Assets/Scenes/EndlessMode.unity
     guid: 428f99466ca2e1440a67651a0f28d36c
   - enabled: 1
@@ -122,9 +125,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelSelection.unity
     guid: aead9eec7d758234b9c5b22793aa9866
-  - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: e990a5e8bdc4a7d4e9458c646c482a57
   - enabled: 1
     path: Assets/Scenes/TimeMode.unity
     guid: a9ca146f7f803e54aa873ce84adc2750

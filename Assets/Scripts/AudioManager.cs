@@ -316,6 +316,11 @@ public class AudioManager : MonoBehaviour
         uiSource.PlayOneShot(buttonClickSound, sfxVolume);
     }
 
+    public void PlayCustomSFX(AudioClip clip)
+    {
+        if (isPaused || clip == null || sfxSource == null) return;
+        sfxSource.PlayOneShot(clip, sfxVolume);
+    }
     public void PlayWinSound()
     {
         if (isPaused || winSound == null || sfxSource == null) return;

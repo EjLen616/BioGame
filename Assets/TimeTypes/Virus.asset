@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Virus
   m_EditorClassIdentifier: 
   typeName: Virus
-  sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  color: {r: 0, g: 0, b: 0, a: 1}
+  sprite: {fileID: -8625906013721215279, guid: 653a5df71fdc9fe4a8d005eba4cb22fc, type: 3}
+  color: {r: 1, g: 1, b: 1, a: 1}
   pointValue: 0
   vitaminType: Virus

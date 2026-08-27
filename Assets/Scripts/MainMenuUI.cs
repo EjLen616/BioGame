@@ -15,6 +15,11 @@ public class MainMenuUI : MonoBehaviour
     public Button settingsButton;
     public Button exitButton;
 
+    [Header("Custom Panel")]
+    public GameObject customPanel;
+    public Button openCustomPanelButton;
+    public Button backFromCustomPanelButton;
+
     [Header("Game Mode Panel")]
     public GameObject gameModePanel;
     public Button standardModeButton;
@@ -101,6 +106,13 @@ public class MainMenuUI : MonoBehaviour
         if (exitButton != null)
             exitButton.onClick.AddListener(OnExitClicked);
 
+        // Setup custom panel buttons
+        if (openCustomPanelButton != null)
+            openCustomPanelButton.onClick.AddListener(OnOpenCustomPanelClicked);
+
+        if (backFromCustomPanelButton != null)
+            backFromCustomPanelButton.onClick.AddListener(OnBackFromCustomPanelClicked);
+
         // Setup game mode buttons
         if (standardModeButton != null)
             standardModeButton.onClick.AddListener(OnStandardModeClicked);
@@ -142,149 +154,42 @@ public class MainMenuUI : MonoBehaviour
 
     void SetupLevelButtons()
     {
-        // Level 1
-        if (level1Button != null)
-            level1Button.onClick.AddListener(() => LoadLevel(1));
-
-        // Level 2
-        if (level2Button != null)
-            level2Button.onClick.AddListener(() => LoadLevel(2));
-
-        // Level 3
-        if (level3Button != null)
-            level3Button.onClick.AddListener(() => LoadLevel(3));
-
-        // Level 4
-        if (level4Button != null)
-            level4Button.onClick.AddListener(() => LoadLevel(4));
-
-        // Level 5
-        if (level5Button != null)
-            level5Button.onClick.AddListener(() => LoadLevel(5));
-
-        // Level 6
-        if (level6Button != null)
-            level6Button.onClick.AddListener(() => LoadLevel(6));
-
-        // Level 7
-        if (level7Button != null)
-            level7Button.onClick.AddListener(() => LoadLevel(7));
-
-        // Level 8
-        if (level8Button != null)
-            level8Button.onClick.AddListener(() => LoadLevel(8));
-
-        // Level 9
-        if (level9Button != null)
-            level9Button.onClick.AddListener(() => LoadLevel(9));
-
-        // Level 10
-        if (level10Button != null)
-            level10Button.onClick.AddListener(() => LoadLevel(10));
-
-        // Level 11
-        if (level11Button != null)
-            level11Button.onClick.AddListener(() => LoadLevel(11));
-
-        // Level 12
-        if (level12Button != null)
-            level12Button.onClick.AddListener(() => LoadLevel(12));
-
-        // Level 13
-        if (level13Button != null)
-            level13Button.onClick.AddListener(() => LoadLevel(13));
-
-        // Level 14
-        if (level14Button != null)
-            level14Button.onClick.AddListener(() => LoadLevel(14));
-
-        // Level 15
-        if (level15Button != null)
-            level15Button.onClick.AddListener(() => LoadLevel(15));
-
-        // Level 16
-        if (level16Button != null)
-            level16Button.onClick.AddListener(() => LoadLevel(16));
-
-        // Level 17
-        if (level17Button != null)
-            level17Button.onClick.AddListener(() => LoadLevel(17));
-
-        // Level 18
-        if (level18Button != null)
-            level18Button.onClick.AddListener(() => LoadLevel(18));
-
-        // Level 19
-        if (level19Button != null)
-            level19Button.onClick.AddListener(() => LoadLevel(19));
-
-        // Level 20
-        if (level20Button != null)
-            level20Button.onClick.AddListener(() => LoadLevel(20));
-
-        // Level 21
-        if (level21Button != null)
-            level21Button.onClick.AddListener(() => LoadLevel(21));
-
-        // Level 22
-        if (level22Button != null)
-            level22Button.onClick.AddListener(() => LoadLevel(22));
-
-        // Level 23
-        if (level23Button != null)
-            level23Button.onClick.AddListener(() => LoadLevel(23));
-
-        // Level 24
-        if (level24Button != null)
-            level24Button.onClick.AddListener(() => LoadLevel(24));
-
-        // Level 25
-        if (level25Button != null)
-            level25Button.onClick.AddListener(() => LoadLevel(25));
-
-        // Level 26
-        if (level26Button != null)
-            level26Button.onClick.AddListener(() => LoadLevel(26));
-
-        // Level 27
-        if (level27Button != null)
-            level27Button.onClick.AddListener(() => LoadLevel(27));
-
-        // Level 28
-        if (level28Button != null)
-            level28Button.onClick.AddListener(() => LoadLevel(28));
-
-        // Level 29
-        if (level29Button != null)
-            level29Button.onClick.AddListener(() => LoadLevel(29));
-
-        // Level 30
-        if (level30Button != null)
-            level30Button.onClick.AddListener(() => LoadLevel(30));
-
-        // Level 31
-        if (level31Button != null)
-            level31Button.onClick.AddListener(() => LoadLevel(31));
-
-        // Level 32
-        if (level32Button != null)
-            level32Button.onClick.AddListener(() => LoadLevel(32));
-
-        // Level 33
-        if (level33Button != null)
-            level33Button.onClick.AddListener(() => LoadLevel(33));
-
-        // Level 34
-        if (level34Button != null)
-            level34Button.onClick.AddListener(() => LoadLevel(34));
-
-        // Level 35
-        if (level35Button != null)
-            level35Button.onClick.AddListener(() => LoadLevel(35));
-
-        // Level 36
-        if (level36Button != null)
-            level36Button.onClick.AddListener(() => LoadLevel(36));
+        if (level1Button != null) level1Button.onClick.AddListener(() => LoadLevel(1));
+        if (level2Button != null) level2Button.onClick.AddListener(() => LoadLevel(2));
+        if (level3Button != null) level3Button.onClick.AddListener(() => LoadLevel(3));
+        if (level4Button != null) level4Button.onClick.AddListener(() => LoadLevel(4));
+        if (level5Button != null) level5Button.onClick.AddListener(() => LoadLevel(5));
+        if (level6Button != null) level6Button.onClick.AddListener(() => LoadLevel(6));
+        if (level7Button != null) level7Button.onClick.AddListener(() => LoadLevel(7));
+        if (level8Button != null) level8Button.onClick.AddListener(() => LoadLevel(8));
+        if (level9Button != null) level9Button.onClick.AddListener(() => LoadLevel(9));
+        if (level10Button != null) level10Button.onClick.AddListener(() => LoadLevel(10));
+        if (level11Button != null) level11Button.onClick.AddListener(() => LoadLevel(11));
+        if (level12Button != null) level12Button.onClick.AddListener(() => LoadLevel(12));
+        if (level13Button != null) level13Button.onClick.AddListener(() => LoadLevel(13));
+        if (level14Button != null) level14Button.onClick.AddListener(() => LoadLevel(14));
+        if (level15Button != null) level15Button.onClick.AddListener(() => LoadLevel(15));
+        if (level16Button != null) level16Button.onClick.AddListener(() => LoadLevel(16));
+        if (level17Button != null) level17Button.onClick.AddListener(() => LoadLevel(17));
+        if (level18Button != null) level18Button.onClick.AddListener(() => LoadLevel(18));
+        if (level19Button != null) level19Button.onClick.AddListener(() => LoadLevel(19));
+        if (level20Button != null) level20Button.onClick.AddListener(() => LoadLevel(20));
+        if (level21Button != null) level21Button.onClick.AddListener(() => LoadLevel(21));
+        if (level22Button != null) level22Button.onClick.AddListener(() => LoadLevel(22));
+        if (level23Button != null) level23Button.onClick.AddListener(() => LoadLevel(23));
+        if (level24Button != null) level24Button.onClick.AddListener(() => LoadLevel(24));
+        if (level25Button != null) level25Button.onClick.AddListener(() => LoadLevel(25));
+        if (level26Button != null) level26Button.onClick.AddListener(() => LoadLevel(26));
+        if (level27Button != null) level27Button.onClick.AddListener(() => LoadLevel(27));
+        if (level28Button != null) level28Button.onClick.AddListener(() => LoadLevel(28));
+        if (level29Button != null) level29Button.onClick.AddListener(() => LoadLevel(29));
+        if (level30Button != null) level30Button.onClick.AddListener(() => LoadLevel(30));
+        if (level31Button != null) level31Button.onClick.AddListener(() => LoadLevel(31));
+        if (level32Button != null) level32Button.onClick.AddListener(() => LoadLevel(32));
+        if (level33Button != null) level33Button.onClick.AddListener(() => LoadLevel(33));
+        if (level34Button != null) level34Button.onClick.AddListener(() => LoadLevel(34));
+        if (level35Button != null) level35Button.onClick.AddListener(() => LoadLevel(35));
+        if (level36Button != null) level36Button.onClick.AddListener(() => LoadLevel(36));
 
         Debug.Log("All level buttons configured!");
     }
@@ -312,6 +217,9 @@ public class MainMenuUI : MonoBehaviour
 
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
+
+        if (customPanel != null)
+            customPanel.SetActive(false);
     }
 
     void SetupSettingsSliders()
@@ -345,6 +253,15 @@ public class MainMenuUI : MonoBehaviour
 
         if (gameModePanel != null)
             gameModePanel.SetActive(true);
+
+        if (levelSelectionPanel != null)
+            levelSelectionPanel.SetActive(false);
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        if (customPanel != null)
+            customPanel.SetActive(false);
     }
 
     void OnStandardModeClicked()
@@ -400,14 +317,25 @@ public class MainMenuUI : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayButtonClick();
 
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+
         if (settingsPanel != null)
-        {
             settingsPanel.SetActive(true);
-            if (musicSlider != null && SettingsManager.Instance != null)
-                musicSlider.value = SettingsManager.Instance.musicVolume;
-            if (sfxSlider != null && SettingsManager.Instance != null)
-                sfxSlider.value = SettingsManager.Instance.sfxVolume;
-        }
+
+        if (gameModePanel != null)
+            gameModePanel.SetActive(false);
+
+        if (levelSelectionPanel != null)
+            levelSelectionPanel.SetActive(false);
+
+        if (customPanel != null)
+            customPanel.SetActive(false);
+
+        if (musicSlider != null && SettingsManager.Instance != null)
+            musicSlider.value = SettingsManager.Instance.musicVolume;
+        if (sfxSlider != null && SettingsManager.Instance != null)
+            sfxSlider.value = SettingsManager.Instance.sfxVolume;
     }
 
     void CloseSettings()
@@ -417,6 +345,45 @@ public class MainMenuUI : MonoBehaviour
 
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
+
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
+    }
+
+    void OnOpenCustomPanelClicked()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayButtonClick();
+
+        // Hide main menu, show custom panel
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+
+        if (customPanel != null)
+            customPanel.SetActive(true);
+
+        // Make sure other panels are hidden
+        if (gameModePanel != null)
+            gameModePanel.SetActive(false);
+
+        if (levelSelectionPanel != null)
+            levelSelectionPanel.SetActive(false);
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+    }
+
+    void OnBackFromCustomPanelClicked()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayButtonClick();
+
+        // Hide custom panel, show main menu
+        if (customPanel != null)
+            customPanel.SetActive(false);
+
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
     }
 
     void OnMusicVolumeChanged(float value)
