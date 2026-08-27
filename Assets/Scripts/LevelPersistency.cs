@@ -9,23 +9,9 @@ public class LevelPersistency : MonoBehaviour
 
     [Header("Scene Names")]
     public string mainMenuSceneName = "MainMenu";
-    public string levelPrefix = "Level"; // NO SPACE! "Level1", "Level2", etc.
+    public string levelPrefix = "Level";
 
-    private static LevelPersistency instance;
     private string currentSceneName = "";
-
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     void Start()
     {
@@ -55,7 +41,6 @@ public class LevelPersistency : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         currentSceneName = sceneName;
 
-        // Check if scene name starts with "Level" (no space)
         if (sceneName.StartsWith(levelPrefix))
         {
             string numberPart = sceneName.Substring(levelPrefix.Length);
